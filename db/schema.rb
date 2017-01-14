@@ -22,10 +22,10 @@ ActiveRecord::Schema.define(version: 20170110232929) do
     t.float    "cash_price"
     t.integer  "size"
     t.integer  "amount"
-    t.boolean  "own"
+    t.boolean  "own",            default: false
     t.integer  "provider_id"
-    t.datetime "created_at",     null: false
-    t.datetime "updated_at",     null: false
+    t.datetime "created_at",                     null: false
+    t.datetime "updated_at",                     null: false
     t.index ["provider_id"], name: "index_products_on_provider_id"
   end
 

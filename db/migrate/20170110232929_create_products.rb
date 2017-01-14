@@ -10,7 +10,7 @@ class CreateProducts < ActiveRecord::Migration[5.0]
       t.float :cash_price
       t.integer :size
       t.integer :amount
-      t.boolean :own
+      t.boolean :own, default: false
       t.references :provider, index: true
 
       t.timestamps

@@ -51,4 +51,32 @@ RSpec.describe ProductsController, type: :controller do
   #   end
   # end
 
+  describe 'PUT/PATCH update' do
+    it 'update product' do
+      FactoryGirl.create(:product_with_provider)
+      get :show, params: {id: 1}
+      json = JSON.parse(response.body)['data']
+      expect(json['id']).to eq '1'
+      expect(json['color']).to be_nil
+
+      params = {color: 'Black'}
+      put :update, params: {id: 1, product: params}
+      json = JSON.parse(response.body)['data']
+
+      expect(json['id']).to eq '1'
+      expect(json['attributes']['color']).to eq 'Black'
+    end
+
+    it 'update amount' do
+      FactoryGirl.create(:product_with_provider)
+      params = {amount: 3}
+      put :update, params: {id: 1, product: params}
+      json = JSON.parse(response.body)['data']
+
+      expect(json['id']).to eq '1'
+      expect(json['attributes']['amount']).to eq 3
+    end
+  end
+
+
 end

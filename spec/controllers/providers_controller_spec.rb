@@ -62,7 +62,6 @@ RSpec.describe ProvidersController, type: :controller do
     end
   end
 
-
   describe 'PUT/PATCH update' do
     it 'update the provider name' do
       FactoryGirl.create(:product_with_provider)
@@ -78,6 +77,6 @@ RSpec.describe ProvidersController, type: :controller do
       expect(json['id']).to eq '1'
       expect(json['attributes']['name']).to eq 'New name'
     end
-
   end
+
 end

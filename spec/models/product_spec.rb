@@ -18,10 +18,17 @@ RSpec.describe Product, type: :model do
     end
 
     it 'should save one product with 3 of amount' do
-      product = FactoryGirl.build(:product, {provider: FactoryGirl.create(:provider), amount: 3})
+      product = FactoryGirl.build(:product_with_provider)
+      product.amount = 3
 
       expect(product.save).to eq true
       expect(Product.find(1).amount).to eq 3
+    end
+
+    it 'returns false when ask for own' do
+      product = FactoryGirl.create(:product_with_provider)
+
+      expect(product.own).to eq false
     end
   end
 
