@@ -15,8 +15,8 @@ class ProductsController < ApplicationController
 
   # POST /products
   def create
-    save_provider
     @product = Product.new(product_params)
+    @product.provider = find_or_create_provider
 
     if @product.save
       render json: @product, status: :created, location: @product
@@ -46,10 +46,12 @@ class ProductsController < ApplicationController
   end
 
   def product_params
-    params.require(:product).permit(:brand, :article, :color, :description, :purchase_price, :sale_price, :cash_price, :size, :amount, :own, :provider)
+    params.require(:product).permit(:brand, :article, :color, :description, :purchase_price, :sale_price, :cash_price,
+                                    :size, :amount, :own, :provider)
   end
 
-  def save_provider
-
+  def find_or_create_provider
+    return unless params[:product][:provider]
+    Provider.find_or_create_by!(name: params[:product][:provider][:name])
   end
 end

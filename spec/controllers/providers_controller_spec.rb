@@ -60,6 +60,17 @@ RSpec.describe ProvidersController, type: :controller do
       expect(json['type']).to eq 'providers'
       expect(json['attributes']['products']).to eq []
     end
+
+    it 'returns 422' do
+      FactoryGirl.create(:provider, name: 'Some name')
+
+      params = {provider: {name: 'Some name'}}
+      post :create, params: params
+      json = JSON.parse(response.body)
+
+      expect(response.status).to eq 422
+      expect(json['name'].first).to eq 'debe ser único'
+    end
   end
 
   describe 'PUT/PATCH update' do

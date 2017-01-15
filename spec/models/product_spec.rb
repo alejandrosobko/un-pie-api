@@ -30,6 +30,12 @@ RSpec.describe Product, type: :model do
 
       expect(product.own).to eq false
     end
+
+    it 'should raise exception' do
+      product = Product.new
+
+      expect{product.save!}.to raise_exception(ActiveRecord::RecordInvalid)
+    end
   end
 
 end

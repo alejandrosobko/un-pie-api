@@ -39,17 +39,28 @@ RSpec.describe ProductsController, type: :controller do
     end
   end
 
-  # describe 'POST create' do
-  #   it 'creates one product with provider' do
-  #     params = {name: 'Ojotas', article: 'OJ1', color: 'Negro', provider: {name: 'Super calzado'}}
-  #     post :create, params: {product: params}
-  #     json = JSON.parse(response.body)['data']
-  #
-  #     expect(json['id']).to eq '1'
-  #     expect(json['type']).to eq 'products'
-  #     expect(json['attributes']['provider']['id']).to eq 1
-  #   end
-  # end
+  describe 'POST create' do
+    it 'returns 422' do
+      params = {name: 'Ojotas', article: 'OJ1', color: 'Negro'}
+      post :create, params: {product: params}
+      json = JSON.parse(response.body)
+
+      expect(response.status).to eq 422
+      expect(json['provider'].first).to eq 'must exist'
+      expect(json['provider'][1]).to eq 'debe existir'
+    end
+
+    it 'creates one product' do
+      provider = FactoryGirl.create(:provider, name: 'Super calzado')
+      params = {name: 'Ojotas', article: 'OJ1', color: 'Negro', provider: provider.as_json}
+      post :create, params: {product: params}
+      json = JSON.parse(response.body)['data']
+
+      expect(json['attributes']['article']).to eq 'OJ1'
+      expect(json['attributes']['color']).to eq 'Negro'
+      expect(json['attributes']['provider']['name']).to eq 'Super calzado'
+    end
+  end
 
   describe 'PUT/PATCH update' do
     it 'update product' do
