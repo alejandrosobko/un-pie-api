@@ -48,6 +48,10 @@ class ProductsController < ApplicationController
   def product_params
     params.require(:product).permit(:brand, :article, :color, :description, :purchase_price, :sale_price, :cash_price,
                                     :size, :amount, :own, :provider)
+
+    # ActiveModelSerializers::Deserialization.jsonapi_parse!(params, only: [:brand, :article, :color, :description,
+    #                                                                       :purchase_price, :sale_price, :cash_price,
+    #                                                                       :size, :amount, :own] )
   end
 
   def find_or_create_provider

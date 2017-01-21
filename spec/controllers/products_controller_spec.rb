@@ -5,7 +5,7 @@ RSpec.describe ProductsController, type: :controller do
   describe 'GET index' do
     it 'returns an empty list' do
       get :index
-      json = JSON.parse(response.body)['data']
+      json = JSON.parse(response.body)['products']
 
       expect(response.status).to eq 200
       expect(json).to eq []
@@ -14,7 +14,7 @@ RSpec.describe ProductsController, type: :controller do
     it 'returns a list with one product' do
       FactoryGirl.create(:product_with_provider)
       get :index
-      json = JSON.parse(response.body)['data']
+      json = JSON.parse(response.body)['products']
 
       expect(response.status).to eq 200
       expect(json.size).to eq 1
@@ -31,17 +31,16 @@ RSpec.describe ProductsController, type: :controller do
     it 'returns one product with provider' do
       FactoryGirl.create(:product_with_provider)
       get :show, params: { id: 1 }
-      json = JSON.parse(response.body)['data']
+      json = JSON.parse(response.body)['product']
 
-      expect(json['id']).to eq '1'
-      expect(json['type']).to eq 'products'
-      expect(json['attributes']['provider']['id']).to eq 1
+      expect(json['id']).to eq 1
+      expect(json['provider']['id']).to eq 1
     end
   end
 
   describe 'POST create' do
     it 'returns 422' do
-      params = {name: 'Ojotas', article: 'OJ1', color: 'Negro'}
+      params = {article: 'OJ1', color: 'Negro'}
       post :create, params: {product: params}
       json = JSON.parse(response.body)
 
@@ -54,11 +53,11 @@ RSpec.describe ProductsController, type: :controller do
       provider = FactoryGirl.create(:provider, name: 'Super calzado')
       params = {name: 'Ojotas', article: 'OJ1', color: 'Negro', provider: provider.as_json}
       post :create, params: {product: params}
-      json = JSON.parse(response.body)['data']
+      json = JSON.parse(response.body)['product']
 
-      expect(json['attributes']['article']).to eq 'OJ1'
-      expect(json['attributes']['color']).to eq 'Negro'
-      expect(json['attributes']['provider']['name']).to eq 'Super calzado'
+      expect(json['article']).to eq 'OJ1'
+      expect(json['color']).to eq 'Negro'
+      expect(json['provider']['name']).to eq 'Super calzado'
     end
   end
 
@@ -66,26 +65,26 @@ RSpec.describe ProductsController, type: :controller do
     it 'update product' do
       FactoryGirl.create(:product_with_provider)
       get :show, params: {id: 1}
-      json = JSON.parse(response.body)['data']
-      expect(json['id']).to eq '1'
+      json = JSON.parse(response.body)['product']
+      expect(json['id']).to eq 1
       expect(json['color']).to be_nil
 
       params = {color: 'Black'}
       put :update, params: {id: 1, product: params}
-      json = JSON.parse(response.body)['data']
+      json = JSON.parse(response.body)['product']
 
-      expect(json['id']).to eq '1'
-      expect(json['attributes']['color']).to eq 'Black'
+      expect(json['id']).to eq 1
+      expect(json['color']).to eq 'Black'
     end
 
     it 'update amount' do
       FactoryGirl.create(:product_with_provider)
       params = {amount: 3}
       put :update, params: {id: 1, product: params}
-      json = JSON.parse(response.body)['data']
+      json = JSON.parse(response.body)['product']
 
-      expect(json['id']).to eq '1'
-      expect(json['attributes']['amount']).to eq 3
+      expect(json['id']).to eq 1
+      expect(json['amount']).to eq 3
     end
   end
 
