@@ -15,8 +15,7 @@ class ProductsController < ApplicationController
 
   # POST /products
   def create
-    @product = Product.new(product_params)
-    @product.provider = find_or_create_provider
+    @product = find_or_create_product
 
     if @product.save
       render json: @product, status: :created, location: @product
@@ -46,16 +45,32 @@ class ProductsController < ApplicationController
   end
 
   def product_params
+    parse_default_params
     params.require(:product).permit(:brand, :article, :color, :description, :purchase_price, :sale_price, :cash_price,
                                     :size, :amount, :own, :provider)
+  end
 
-    # ActiveModelSerializers::Deserialization.jsonapi_parse!(params, only: [:brand, :article, :color, :description,
-    #                                                                       :purchase_price, :sale_price, :cash_price,
-    #                                                                       :size, :amount, :own] )
+  def parse_default_params
+    return unless params[:product]
+    params[:product][:amount] ||= 0
+    params[:product][:purchase_price] ||= 0.0
+    params[:product][:sale_price] ||= 0.0
+    params[:product][:cash_price] ||= 0.0
   end
 
   def find_or_create_provider
     return unless params[:product][:provider]
     Provider.find_or_create_by!(name: params[:product][:provider][:name])
+  end
+
+  def find_or_create_product
+    product = Product.find_by({brand: params[:product][:brand], article: params[:product][:article]})
+    if product
+      product.amount += params[:product][:amount].to_i
+    else
+      product = Product.new(product_params)
+      product.provider = find_or_create_provider
+    end
+    product
   end
 end
