@@ -17,6 +17,15 @@ RSpec.describe Product, type: :model do
       expect(product.save).to eq true
     end
 
+    it 'should initialize with amount = 0 and prices = 0.0' do
+      product = Product.create!({provider: FactoryGirl.create(:provider)})
+
+      expect(product.amount).to eq 0
+      expect(product.purchase_price).to eq 0.0
+      expect(product.sale_price).to eq 0.0
+      expect(product.cash_price).to eq 0.0
+    end
+
     it 'should save one product with 3 of amount' do
       product = FactoryGirl.build(:product_with_provider)
       product.amount = 3

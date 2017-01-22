@@ -5,11 +5,11 @@ class CreateProducts < ActiveRecord::Migration[5.0]
       t.string :article
       t.string :color
       t.text :description
-      t.float :purchase_price
-      t.float :sale_price
-      t.float :cash_price
+      t.float :purchase_price, default: 0.0, null: false
+      t.float :sale_price, default: 0.0, null: false
+      t.float :cash_price, default: 0.0, null: false
       t.integer :size
-      t.integer :amount
+      t.integer :amount, default: 0, null: false
       t.boolean :own, default: false
       t.references :provider, index: true
 
