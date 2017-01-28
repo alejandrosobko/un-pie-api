@@ -58,18 +58,19 @@ class ProductsController < ApplicationController
     params[:product][:cash_price] ||= 0.0
   end
 
-  def find_or_create_provider
+  def find_or_initialize_provider
     return unless params[:product][:provider]
-    Provider.find_or_create_by!(name: params[:product][:provider][:name])
+    Provider.find_or_initialize_by(name: params[:product][:provider][:name])
   end
 
   def find_or_create_product
-    product = Product.find_by({brand: params[:product][:brand], article: params[:product][:article]})
+    product = Product.find_by({brand: params[:product][:brand], article: params[:product][:article],
+                               size: params[:product][:size], color: params[:product][:color]})
     if product
       product.amount += params[:product][:amount].to_i
     else
       product = Product.new(product_params)
-      product.provider = find_or_create_provider
+      product.provider = find_or_initialize_provider
     end
     product
   end

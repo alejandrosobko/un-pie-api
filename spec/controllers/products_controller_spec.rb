@@ -89,12 +89,12 @@ RSpec.describe ProductsController, type: :controller do
   end
 
   it 'should increase the amount, and not create other one' do
-    product = FactoryGirl.create(:product_with_provider, brand: 'Brand', article: 'ABC123', amount: 3)
+    FactoryGirl.create(:product_with_provider, brand: 'Brand', article: 'ABC123', size: '40-41', color: 'Black', amount: 3)
 
     expect(Product.all.size).to eq 1
 
     provider = FactoryGirl.create(:provider, name: 'Bla')
-    params = {brand: 'Brand', article: 'ABC123', amount: 3, provider: provider.as_json}
+    params = {brand: 'Brand', article: 'ABC123', size: '40-41', color: 'Black', amount: 3, provider: provider.as_json}
 
     post :create, params: {product: params}
     json = JSON.parse(response.body)['product']
