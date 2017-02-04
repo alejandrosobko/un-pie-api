@@ -3,4 +3,5 @@ Rails.application.routes.draw do
 
   resources :products
   resources :providers
+  resources :sales, only: [:index, :show, :create]
 end
