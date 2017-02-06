@@ -1,6 +1,6 @@
 # Un pie y otro pie - API 
 
-[![Build Status](https://travis-ci.org/alejandrosobko/un-pie-api.svg?branch=master)](https://travis-ci.org/alejandrosobko/un-pie-api)
+[![Build Status](https://travis-ci.com/alejandrosobko/un-pie-api.svg?token=TqSkHJwyFjQsqxANWfpX&branch=master)](https://travis-ci.com/alejandrosobko/un-pie-api)
 
 Rails API for the project: _Un pie y otro pie_.
 
