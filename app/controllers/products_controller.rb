@@ -3,7 +3,7 @@ class ProductsController < ApplicationController
 
   # GET /products
   def index
-    @products = Product.all
+    find_products
 
     render json: @products
   end
@@ -48,6 +48,14 @@ class ProductsController < ApplicationController
     parse_default_params
     params.require(:product).permit(:brand, :article, :color, :description, :purchase_price, :sale_price, :cash_price,
                                     :size, :amount, :own, :provider)
+  end
+
+  def find_products
+    if params[:own]
+      @products = Product.where(own: true)
+    else
+      @products = Product.all
+    end
   end
 
   def parse_default_params
