@@ -76,6 +76,7 @@ class ProductsController < ApplicationController
                                size: params[:product][:size], color: params[:product][:color]})
     if product
       product.amount += params[:product][:amount].to_i
+      product.own = true
     else
       product = Product.new(product_params)
       product.provider = find_or_initialize_provider
