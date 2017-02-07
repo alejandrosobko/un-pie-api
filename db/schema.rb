@@ -12,6 +12,9 @@
 
 ActiveRecord::Schema.define(version: 20170204131529) do
 
+  # These are extensions that must be enabled in order to support this database
+  enable_extension "plpgsql"
+
   create_table "products", force: :cascade do |t|
     t.string   "brand"
     t.string   "article"
@@ -26,7 +29,7 @@ ActiveRecord::Schema.define(version: 20170204131529) do
     t.integer  "provider_id"
     t.datetime "created_at",                     null: false
     t.datetime "updated_at",                     null: false
-    t.index ["provider_id"], name: "index_products_on_provider_id"
+    t.index ["provider_id"], name: "index_products_on_provider_id", using: :btree
   end
 
   create_table "providers", force: :cascade do |t|
@@ -41,7 +44,7 @@ ActiveRecord::Schema.define(version: 20170204131529) do
     t.integer  "product_id"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.index ["product_id"], name: "index_sales_on_product_id"
+    t.index ["product_id"], name: "index_sales_on_product_id", using: :btree
   end
 
 end
