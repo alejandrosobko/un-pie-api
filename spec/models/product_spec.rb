@@ -31,7 +31,7 @@ RSpec.describe Product, type: :model do
       product.amount = 3
 
       expect(product.save).to eq true
-      expect(Product.find(1).amount).to eq 3
+      expect(Product.find(product.id).amount).to eq 3
     end
 
     it 'returns false when ask for own' do

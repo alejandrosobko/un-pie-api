@@ -22,29 +22,23 @@ RSpec.describe ProvidersController, type: :controller do
   end
 
   describe 'GET show' do
-    it 'throw ActiveRecord::RecordNotFound' do
-      request = Proc.new{ get :show, params: { id: 1 } }
-
-      expect {request.call}.to raise_error(ActiveRecord::RecordNotFound)
-    end
-
     it 'returns one provider' do
-      FactoryGirl.create(:provider)
-      get :show, params: { id: 1 }
+      provider = FactoryGirl.create(:provider)
+      get :show, params: { id: provider.id }
       json = JSON.parse(response.body)['provider']
 
-      expect(json['id']).to eq 1
+      expect(json['id']).to eq provider.id
       expect(json['products']).to eq []
     end
 
     it 'returns one provider with products' do
-      FactoryGirl.create(:product_with_provider)
+      product = FactoryGirl.create(:product_with_provider)
 
-      get :show, params: { id: 1 }
+      get :show, params: { id: product.provider.id }
       json = JSON.parse(response.body)['provider']
 
-      expect(json['id']).to eq 1
-      expect(json['products'].first['id']).to eq 1
+      expect(json['id']).to eq product.provider.id
+      expect(json['products']).not_to be_empty
     end
   end
 
@@ -54,7 +48,6 @@ RSpec.describe ProvidersController, type: :controller do
       post :create, params: params
       json = JSON.parse(response.body)['provider']
 
-      expect(json['id']).to eq 1
       expect(json['products']).to eq []
     end
 
@@ -72,17 +65,17 @@ RSpec.describe ProvidersController, type: :controller do
 
   describe 'PUT/PATCH update' do
     it 'update the provider name' do
-      FactoryGirl.create(:product_with_provider)
-      get :show, params: {id: 1}
+      product = FactoryGirl.create(:product_with_provider)
+      get :show, params: {id: product.provider.id}
       json = JSON.parse(response.body)['provider']
-      expect(json['id']).to eq 1
+      expect(json['id']).to eq product.provider.id
       expect(json['name']).to eq 'Some name'
 
       params = {name: 'New name'}
-      put :update, params: {id: 1, provider: params}
+      put :update, params: {id: product.provider.id, provider: params}
       json = JSON.parse(response.body)['provider']
 
-      expect(json['id']).to eq 1
+      expect(json['id']).to eq product.provider.id
       expect(json['name']).to eq 'New name'
     end
   end

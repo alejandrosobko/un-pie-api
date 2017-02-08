@@ -56,10 +56,4 @@ RSpec.configure do |config|
   # arbitrary gems may also be filtered via:
   # config.filter_gems_from_backtrace("gem name")
 
-  config.before(:each) do
-    ActiveRecord::Base.connection.execute("TRUNCATE TABLE providers RESTART IDENTITY")
-    ActiveRecord::Base.connection.execute("TRUNCATE TABLE products RESTART IDENTITY")
-    ActiveRecord::Base.connection.execute("TRUNCATE TABLE sales RESTART IDENTITY")
-  end
-
 end

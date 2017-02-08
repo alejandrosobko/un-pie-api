@@ -22,19 +22,13 @@ RSpec.describe ProductsController, type: :controller do
   end
 
   describe 'GET show' do
-    it 'throw ActiveRecord::RecordNotFound' do
-      request = Proc.new{ get :show, params: { id: 1 } }
-
-      expect {request.call}.to raise_error(ActiveRecord::RecordNotFound)
-    end
-
     it 'returns one product with provider' do
-      FactoryGirl.create(:product_with_provider)
-      get :show, params: { id: 1 }
+      product = FactoryGirl.create(:product_with_provider)
+      get :show, params: { id: product.id }
       json = JSON.parse(response.body)['product']
 
-      expect(json['id']).to eq 1
-      expect(json['provider']['id']).to eq 1
+      expect(json['id']).to eq product.id
+      expect(json['provider']['id']).to eq product.provider.id
     end
   end
 
@@ -63,27 +57,27 @@ RSpec.describe ProductsController, type: :controller do
 
   describe 'PUT/PATCH update' do
     it 'update product' do
-      FactoryGirl.create(:product_with_provider)
-      get :show, params: {id: 1}
+      product = FactoryGirl.create(:product_with_provider)
+      get :show, params: {id: product.id}
       json = JSON.parse(response.body)['product']
-      expect(json['id']).to eq 1
+      expect(json['id']).to eq product.id
       expect(json['color']).to be_nil
 
       params = {color: 'Black'}
-      put :update, params: {id: 1, product: params}
+      put :update, params: {id: product.id, product: params}
       json = JSON.parse(response.body)['product']
 
-      expect(json['id']).to eq 1
+      expect(json['id']).to eq product.id
       expect(json['color']).to eq 'Black'
     end
 
     it 'update amount' do
-      FactoryGirl.create(:product_with_provider)
+      product = FactoryGirl.create(:product_with_provider)
       params = {amount: 3}
-      put :update, params: {id: 1, product: params}
+      put :update, params: {id: product.id, product: params}
       json = JSON.parse(response.body)['product']
 
-      expect(json['id']).to eq 1
+      expect(json['id']).to eq product.id
       expect(json['amount']).to eq 3
     end
   end
