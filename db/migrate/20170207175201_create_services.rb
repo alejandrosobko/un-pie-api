@@ -4,7 +4,6 @@ class CreateServices < ActiveRecord::Migration[5.0]
       t.string :name, null: false
       t.float :cost, default: 0.0
       t.datetime :payment_date, null: false
-      t.datetime :due_date, null: false
 
       t.timestamps
     end

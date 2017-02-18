@@ -24,14 +24,12 @@ RSpec.describe ServicesController, type: :controller do
   describe 'POST index' do
     it 'creates a service' do
       payment_date = '01-12-2017'
-      due_date = '05-12-2017'
-      params = {service: {name: 'Gas', cost: 120, payment_date: payment_date, due_date: due_date}}
+      params = {service: {name: 'Gas', cost: 120, payment_date: payment_date}}
       post :create, params: params
       json = JSON.parse(response.body)['service']
 
       expect(json['cost']).to eq 120
       expect(json['payment_date']).to eq '2017-12-01T00:00:00.000-03:00'
-      expect(json['due_date']).to eq '2017-12-05T00:00:00.000-03:00'
     end
 
     it 'does not create a service' do
@@ -41,7 +39,6 @@ RSpec.describe ServicesController, type: :controller do
 
       expect(response.status).to eq 422
       expect(json['payment_date']).to eq ["can't be blank"]
-      expect(json['due_date']).to eq ["can't be blank"]
     end
 
   end

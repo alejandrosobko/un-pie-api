@@ -51,7 +51,6 @@ ActiveRecord::Schema.define(version: 20170207175201) do
     t.string   "name",                       null: false
     t.float    "cost",         default: 0.0
     t.datetime "payment_date",               null: false
-    t.datetime "due_date",                   null: false
     t.datetime "created_at",                 null: false
     t.datetime "updated_at",                 null: false
   end
