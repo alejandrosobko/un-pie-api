@@ -65,7 +65,8 @@ class ProductsController < ApplicationController
     params[:product][:purchase_price] ||= 0.0
     params[:product][:sale_price]     ||= 0.0
     params[:product][:cash_price]     ||= 0.0
-    params[:product][:purchase_date]  ||= Time.zone.now unless params[:product][:purchase_date]
+    purchase_date = params[:product][:purchase_date] || Time.zone.now.to_s
+    params[:product][:purchase_date]  = Time.zone.parse(purchase_date)
   end
 
   def find_or_initialize_provider

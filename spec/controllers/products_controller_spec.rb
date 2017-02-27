@@ -45,7 +45,7 @@ RSpec.describe ProductsController, type: :controller do
 
     it 'creates one product' do
       provider = FactoryGirl.create(:provider, name: 'Super calzado')
-      time = Time.new(2017, 01, 01)
+      time = Time.new(2017, 01, 01).in_time_zone
       params = {article: 'OJ1', color: 'Negro', provider: provider.as_json, purchase_date: time}
       post :create, params: {product: params}
       json = JSON.parse(response.body)['product']
