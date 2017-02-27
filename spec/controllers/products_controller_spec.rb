@@ -2,6 +2,8 @@ require 'rails_helper'
 
 RSpec.describe ProductsController, type: :controller do
 
+  before(:each) { Time.zone = 'Buenos Aires' }
+
   describe 'GET index' do
     it 'returns an empty list' do
       get :index
