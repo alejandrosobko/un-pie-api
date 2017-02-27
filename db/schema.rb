@@ -26,6 +26,7 @@ ActiveRecord::Schema.define(version: 20170207175201) do
     t.integer  "size"
     t.integer  "amount",         default: 0,     null: false
     t.boolean  "own",            default: false
+    t.datetime "purchase_date",                  null: false
     t.integer  "provider_id"
     t.datetime "created_at",                     null: false
     t.datetime "updated_at",                     null: false

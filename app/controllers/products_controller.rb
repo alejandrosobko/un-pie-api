@@ -15,7 +15,8 @@ class ProductsController < ApplicationController
 
   # POST /products
   def create
-    @product = find_or_create_product
+    @product = Product.new(product_params)
+    @product.provider = find_or_initialize_provider
 
     if @product.save
       render json: @product, status: :created, location: @product
@@ -47,7 +48,7 @@ class ProductsController < ApplicationController
   def product_params
     parse_default_params
     params.require(:product).permit(:brand, :article, :color, :description, :purchase_price, :sale_price, :cash_price,
-                                    :size, :amount, :own, :provider)
+                                    :size, :amount, :own, :provider, :purchase_date)
   end
 
   def find_products
@@ -60,10 +61,11 @@ class ProductsController < ApplicationController
 
   def parse_default_params
     return unless params[:product]
-    params[:product][:amount] ||= 0
+    params[:product][:amount]         ||= 0
     params[:product][:purchase_price] ||= 0.0
-    params[:product][:sale_price] ||= 0.0
-    params[:product][:cash_price] ||= 0.0
+    params[:product][:sale_price]     ||= 0.0
+    params[:product][:cash_price]     ||= 0.0
+    params[:product][:purchase_date]  ||= Time.zone.now unless params[:product][:purchase_date]
   end
 
   def find_or_initialize_provider
@@ -71,16 +73,4 @@ class ProductsController < ApplicationController
     Provider.find_or_initialize_by(name: params[:product][:provider][:name])
   end
 
-  def find_or_create_product
-    product = Product.find_by({brand: params[:product][:brand], article: params[:product][:article],
-                               size: params[:product][:size], color: params[:product][:color]})
-    if product
-      product.amount += params[:product][:amount].to_i
-      product.own = true
-    else
-      product = Product.new(product_params)
-      product.provider = find_or_initialize_provider
-    end
-    product
-  end
 end
