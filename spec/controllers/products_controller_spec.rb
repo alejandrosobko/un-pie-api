@@ -68,19 +68,36 @@ RSpec.describe ProductsController, type: :controller do
       expect(PurchaseOrder.first.purchase_date).to eq Time.zone.parse('2017-01-01')
     end
 
-    it 'should increase the amount, and not create other one' do
-      provider = FactoryGirl.create(:provider, name: 'Bla')
-      FactoryGirl.create(:product, brand: 'Brand', article: 'ABC123', size: '40-41', color: 'Black', amount: 3, provider: provider)
+    describe 'existing products' do
+      it 'should increase the amount, and not create other one' do
+        provider = FactoryGirl.create(:provider, name: 'Bla')
+        FactoryGirl.create(:product, brand: 'Brand', article: 'ABC123', size: '40-41', color: 'Black', amount: 3, provider: provider)
 
-      expect(Product.all.size).to eq 1
+        expect(Product.all.size).to eq 1
 
-      params = {brand: 'Brand', article: 'ABC123', size: '40-41', color: 'Black', amount: 3, provider: provider.as_json}
+        params = {brand: 'Brand', article: 'ABC123', size: '40-41', color: 'Black', amount: 3, provider: provider.as_json}
 
-      post :create, params: {product: params}
-      json = JSON.parse(response.body)['product']
+        post :create, params: {product: params}
+        json = JSON.parse(response.body)['product']
 
-      expect(Product.all.size).to eq 1
-      expect(json['amount']).to eq 6
+        expect(Product.all.size).to eq 1
+        expect(json['amount']).to eq 6
+      end
+
+      it 'update the pruchase price' do
+        provider = FactoryGirl.create(:provider, name: 'Bla')
+        FactoryGirl.create(:product, brand: 'Brand', article: 'ABC123', size: '40-41', color: 'Black', purchase_price: 10, provider: provider)
+
+        expect(Product.all.size).to eq 1
+
+        params = {brand: 'Brand', article: 'ABC123', size: '40-41', color: 'Black', amount: 3, purchase_price: 20, provider: provider.as_json}
+
+        post :create, params: {product: params}
+        json = JSON.parse(response.body)['product']
+
+        expect(Product.all.size).to eq 1
+        expect(json['purchase_price']).to eq 20
+      end
     end
   end
 

@@ -74,6 +74,7 @@ class ProductsController < ApplicationController
                                size: params[:product][:size], color: params[:product][:color]})
 
     if product && product.provider.name == params[:product][:provider][:name]
+      product.purchase_price = params[:product][:purchase_price].to_i
       product.amount += params[:product][:amount].to_i
       product.own = true
     else
