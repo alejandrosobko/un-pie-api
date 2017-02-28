@@ -65,7 +65,7 @@ RSpec.describe ProductsController, type: :controller do
 
       expect(PurchaseOrder.all.size).to eq 1
       expect(PurchaseOrder.first.product.id).to eq json['id']
-      expect(PurchaseOrder.first.purchase_date).to eq Time.new('2017-01-01')
+      expect(PurchaseOrder.first.purchase_date).to eq Time.zone.parse('2017-01-01')
     end
 
     it 'should increase the amount, and not create other one' do
