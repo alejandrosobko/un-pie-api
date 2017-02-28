@@ -5,4 +5,5 @@ Rails.application.routes.draw do
   resources :providers
   resources :sales, only: [:index, :show, :create]
   resources :services, only: [:index, :create, :destroy]
+  resources :purchase_orders, only: [:index]
 end

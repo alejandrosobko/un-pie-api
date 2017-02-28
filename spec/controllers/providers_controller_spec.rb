@@ -32,7 +32,7 @@ RSpec.describe ProvidersController, type: :controller do
     end
 
     it 'returns one provider with products' do
-      product = FactoryGirl.create(:product_with_provider)
+      product = FactoryGirl.create(:product)
 
       get :show, params: { id: product.provider.id }
       json = JSON.parse(response.body)['provider']
@@ -65,7 +65,7 @@ RSpec.describe ProvidersController, type: :controller do
 
   describe 'PUT/PATCH update' do
     it 'update the provider name' do
-      product = FactoryGirl.create(:product_with_provider)
+      product = FactoryGirl.create(:product)
       get :show, params: {id: product.provider.id}
       json = JSON.parse(response.body)['provider']
       expect(json['id']).to eq product.provider.id

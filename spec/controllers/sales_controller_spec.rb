@@ -23,7 +23,7 @@ RSpec.describe SalesController, type: :controller do
 
   describe 'POST index' do
     it 'creates a sale' do
-      product = FactoryGirl.create(:product_with_provider)
+      product = FactoryGirl.create(:product)
 
       params = {sale: {sale_price: 120, sale_date: '20/01/2016', product_id: product.id}}
       post :create, params: params
@@ -35,7 +35,7 @@ RSpec.describe SalesController, type: :controller do
     end
 
     it 'reduces the amount of the product sold' do
-      product = FactoryGirl.create(:product_with_provider, amount: 3)
+      product = FactoryGirl.create(:product, amount: 3)
       params = {sale: {sale_price: 120, sale_date: '20/01/2016', product_id: product.id}}
       post :create, params: params
 

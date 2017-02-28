@@ -15,7 +15,7 @@ class ProductsController < ApplicationController
 
   # POST /products
   def create
-    @product = Product.new(product_params)
+    @product = find_or_create_product
     @product.provider = find_or_initialize_provider
 
     if @product.save
@@ -67,6 +67,22 @@ class ProductsController < ApplicationController
     params[:product][:cash_price]     ||= 0.0
     purchase_date = params[:product][:purchase_date] || Time.zone.now.to_s
     params[:product][:purchase_date]  = Time.zone.parse(purchase_date)
+  end
+
+  def find_or_create_product
+    product = Product.find_by({brand: params[:product][:brand], article: params[:product][:article],
+                               size: params[:product][:size], color: params[:product][:color]})
+    if product
+      product.amount += params[:product][:amount].to_i
+      product.own = true
+    else
+      product = Product.new(product_params)
+      product.provider = find_or_initialize_provider
+    end
+
+    PurchaseOrder.create!({product: product, purchase_date: product.purchase_date})
+
+    product
   end
 
   def find_or_initialize_provider

@@ -14,7 +14,7 @@ RSpec.describe ProductsController, type: :controller do
     end
 
     it 'returns a list with one product' do
-      FactoryGirl.create(:product_with_provider)
+      FactoryGirl.create(:product)
       get :index
       json = JSON.parse(response.body)['products']
 
@@ -25,7 +25,7 @@ RSpec.describe ProductsController, type: :controller do
 
   describe 'GET show' do
     it 'returns one product with provider' do
-      product = FactoryGirl.create(:product_with_provider)
+      product = FactoryGirl.create(:product)
       get :show, params: { id: product.id }
       json = JSON.parse(response.body)['product']
 
@@ -57,11 +57,37 @@ RSpec.describe ProductsController, type: :controller do
       expect(json['provider']['name']).to eq 'Super calzado'
       expect(json['purchase_date']).to eq '2017-01-01T00:00:00.000-03:00'
     end
+
+    it 'creates a purchase order' do
+      provider = FactoryGirl.create(:provider, name: 'Super calzado')
+      params = {article: 'OJ1', color: 'Negro', provider: provider.as_json, purchase_date: '2017-01-01'}
+      post :create, params: {product: params}
+      json = JSON.parse(response.body)['product']
+
+      expect(PurchaseOrder.all.size).to eq 1
+      expect(PurchaseOrder.first.product.id).to eq json['id']
+      expect(PurchaseOrder.first.purchase_date).to eq json['purchase_date']
+    end
+
+    it 'should increase the amount, and not create other one' do
+      FactoryGirl.create(:product, brand: 'Brand', article: 'ABC123', size: '40-41', color: 'Black', amount: 3)
+
+      expect(Product.all.size).to eq 1
+
+      provider = FactoryGirl.create(:provider, name: 'Bla')
+      params = {brand: 'Brand', article: 'ABC123', size: '40-41', color: 'Black', amount: 3, provider: provider.as_json}
+
+      post :create, params: {product: params}
+      json = JSON.parse(response.body)['product']
+
+      expect(Product.all.size).to eq 1
+      expect(json['amount']).to eq 6
+    end
   end
 
   describe 'PUT/PATCH update' do
     it 'update product' do
-      product = FactoryGirl.create(:product_with_provider)
+      product = FactoryGirl.create(:product)
       get :show, params: {id: product.id}
       json = JSON.parse(response.body)['product']
       expect(json['id']).to eq product.id
@@ -76,7 +102,7 @@ RSpec.describe ProductsController, type: :controller do
     end
 
     it 'update amount' do
-      product = FactoryGirl.create(:product_with_provider)
+      product = FactoryGirl.create(:product)
       params = {amount: 3}
       put :update, params: {id: product.id, product: params}
       json = JSON.parse(response.body)['product']
