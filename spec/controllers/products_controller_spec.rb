@@ -55,7 +55,6 @@ RSpec.describe ProductsController, type: :controller do
       expect(json['article']).to eq 'OJ1'
       expect(json['color']).to eq 'Negro'
       expect(json['provider']['name']).to eq 'Super calzado'
-      expect(json['purchase_date']).to eq '2017-01-01T00:00:00.000-03:00'
     end
 
     it 'creates a purchase order' do
@@ -66,15 +65,15 @@ RSpec.describe ProductsController, type: :controller do
 
       expect(PurchaseOrder.all.size).to eq 1
       expect(PurchaseOrder.first.product.id).to eq json['id']
-      expect(PurchaseOrder.first.purchase_date).to eq json['purchase_date']
+      expect(PurchaseOrder.first.purchase_date).to eq Time.new('2017-01-01')
     end
 
     it 'should increase the amount, and not create other one' do
-      FactoryGirl.create(:product, brand: 'Brand', article: 'ABC123', size: '40-41', color: 'Black', amount: 3)
+      provider = FactoryGirl.create(:provider, name: 'Bla')
+      FactoryGirl.create(:product, brand: 'Brand', article: 'ABC123', size: '40-41', color: 'Black', amount: 3, provider: provider)
 
       expect(Product.all.size).to eq 1
 
-      provider = FactoryGirl.create(:provider, name: 'Bla')
       params = {brand: 'Brand', article: 'ABC123', size: '40-41', color: 'Black', amount: 3, provider: provider.as_json}
 
       post :create, params: {product: params}

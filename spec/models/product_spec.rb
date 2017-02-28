@@ -13,13 +13,12 @@ RSpec.describe Product, type: :model do
       provider = FactoryGirl.create(:provider)
       product = Product.new
       product.provider = provider
-      product.purchase_date = Time.zone.now
 
       expect(product.save).to eq true
     end
 
     it 'should initialize with amount = 0 and prices = 0.0' do
-      product = Product.create!({provider: FactoryGirl.create(:provider), purchase_date: Time.zone.now})
+      product = Product.create!({provider: FactoryGirl.create(:provider)})
 
       expect(product.amount).to eq 0
       expect(product.purchase_price).to eq 0.0

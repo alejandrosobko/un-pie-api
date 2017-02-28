@@ -1,5 +1,6 @@
 class ProductsController < ApplicationController
   before_action :set_product, only: [:show, :update, :destroy]
+  before_action :parse_default_params
 
   # GET /products
   def index
@@ -46,9 +47,8 @@ class ProductsController < ApplicationController
   end
 
   def product_params
-    parse_default_params
     params.require(:product).permit(:brand, :article, :color, :description, :purchase_price, :sale_price, :cash_price,
-                                    :size, :amount, :own, :provider, :purchase_date)
+                                    :size, :amount, :own, :provider)
   end
 
   def find_products
@@ -72,7 +72,8 @@ class ProductsController < ApplicationController
   def find_or_create_product
     product = Product.find_by({brand: params[:product][:brand], article: params[:product][:article],
                                size: params[:product][:size], color: params[:product][:color]})
-    if product
+
+    if product && product.provider.name == params[:product][:provider][:name]
       product.amount += params[:product][:amount].to_i
       product.own = true
     else
@@ -80,7 +81,7 @@ class ProductsController < ApplicationController
       product.provider = find_or_initialize_provider
     end
 
-    PurchaseOrder.create!({product: product, purchase_date: product.purchase_date})
+    PurchaseOrder.create!({product: product, purchase_date: params[:product][:purchase_date]})
 
     product
   end
