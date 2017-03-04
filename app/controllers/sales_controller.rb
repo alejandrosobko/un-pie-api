@@ -33,7 +33,7 @@ class SalesController < ApplicationController
   def create_sale
     @sale = Sale.new(sale_params)
     @sale.product_id = sale_params[:product_id]
-    @sale.sale_date = Time.zone.parse(sale_params[:sale_date])
+    @sale.sale_date = Time.zone.parse(sale_params[:sale_date] || Time.zone.now)
     reduce_product_amount
   end
 

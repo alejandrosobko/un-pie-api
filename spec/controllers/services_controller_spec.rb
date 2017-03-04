@@ -32,13 +32,12 @@ RSpec.describe ServicesController, type: :controller do
       expect(json['payment_date']).to eq '2017-12-01T00:00:00.000-03:00'
     end
 
-    it 'does not create a service' do
+    it 'creates a service with payment_date = now' do
       params = {service: {name: 'Gas', cost: 120}}
       post :create, params: params
-      json = JSON.parse(response.body)
+      json = JSON.parse(response.body)['service']
 
-      expect(response.status).to eq 422
-      expect(json['payment_date']).to eq ["can't be blank"]
+      expect(json['payment_date']).to be_a_kind_of String
     end
 
   end

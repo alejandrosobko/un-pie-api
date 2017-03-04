@@ -9,16 +9,16 @@ RSpec.describe Product, type: :model do
       expect(product.save).to eq false
     end
 
-    it 'should can save a product with provider and purchase date' do
+    it 'should can save a product with brand, provider and purchase date' do
       provider = FactoryGirl.create(:provider)
-      product = Product.new
+      product = Product.new({brand: 'Some brand'})
       product.provider = provider
 
       expect(product.save).to eq true
     end
 
     it 'should initialize with amount = 0 and prices = 0.0' do
-      product = Product.create!({provider: FactoryGirl.create(:provider)})
+      product = Product.create!({brand: 'A brand', provider: FactoryGirl.create(:provider)})
 
       expect(product.amount).to eq 0
       expect(product.purchase_price).to eq 0.0

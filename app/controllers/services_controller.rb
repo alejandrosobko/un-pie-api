@@ -1,5 +1,7 @@
 class ServicesController < ApplicationController
 
+  before_filter :parse_date, only: [:create]
+
   # GET /services
   def index
     @services = Service.all
@@ -28,6 +30,11 @@ class ServicesController < ApplicationController
 
   def service_params
     params.require(:service).permit(:name, :cost, :payment_date)
+  end
+
+  def parse_date
+    date = params[:service][:payment_date] || Time.zone.now.to_s
+    params[:service][:payment_date] = Time.zone.parse(date)
   end
 
 end

@@ -36,7 +36,7 @@ RSpec.describe ProductsController, type: :controller do
 
   describe 'POST create' do
     it 'returns 422' do
-      params = {article: 'OJ1', color: 'Negro'}
+      params = {brand: 'A brand', article: 'OJ1', color: 'Negro'}
       post :create, params: {product: params}
       json = JSON.parse(response.body)
 
@@ -48,7 +48,7 @@ RSpec.describe ProductsController, type: :controller do
     it 'creates one product' do
       provider = FactoryGirl.create(:provider, name: 'Super calzado')
       time = '2017-01-01'
-      params = {article: 'OJ1', color: 'Negro', provider: provider.as_json, purchase_date: time}
+      params = {brand: 'A brand', article: 'OJ1', color: 'Negro', provider: provider.as_json, purchase_date: time}
       post :create, params: {product: params}
       json = JSON.parse(response.body)['product']
 
@@ -59,7 +59,7 @@ RSpec.describe ProductsController, type: :controller do
 
     it 'creates a purchase order' do
       provider = FactoryGirl.create(:provider, name: 'Super calzado')
-      params = {article: 'OJ1', color: 'Negro', provider: provider.as_json, purchase_date: '2017-01-01'}
+      params = {brand: 'A brand', article: 'OJ1', color: 'Negro', provider: provider.as_json, purchase_date: '2017-01-01'}
       post :create, params: {product: params}
       json = JSON.parse(response.body)['product']
 
