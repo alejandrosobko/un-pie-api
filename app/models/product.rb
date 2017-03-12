@@ -1,6 +1,6 @@
 class Product < ApplicationRecord
-  belongs_to :provider
+  has_many :purchase_orders
+  has_many :providers, through: :purchase_orders
 
   validates_presence_of :brand, message: 'debe existir'
-  validates_presence_of :provider, message: 'debe existir'
 end

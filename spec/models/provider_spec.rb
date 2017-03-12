@@ -15,12 +15,6 @@ RSpec.describe Provider, type: :model do
       expect(provider.save).to eq true
     end
 
-    it 'returns a list of products' do
-      provider = Provider.new
-
-      expect(provider.products).to eq []
-    end
-
     it 'should raise exception' do
       provider = Provider.new
       provider.name = 'Some name'

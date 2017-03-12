@@ -3,22 +3,20 @@ require 'rails_helper'
 RSpec.describe Product, type: :model do
   
   describe 'new product' do
-    it 'should not save a product without provider' do
+    it 'should not save an empty product' do
       product = Product.new
 
       expect(product.save).to eq false
     end
 
-    it 'should can save a product with brand, provider and purchase date' do
-      provider = FactoryGirl.create(:provider)
+    it 'should can save a product with brand' do
       product = Product.new({brand: 'Some brand'})
-      product.provider = provider
 
       expect(product.save).to eq true
     end
 
     it 'should initialize with amount = 0 and prices = 0.0' do
-      product = Product.create!({brand: 'A brand', provider: FactoryGirl.create(:provider)})
+      product = Product.create!({brand: 'A brand'})
 
       expect(product.amount).to eq 0
       expect(product.purchase_price).to eq 0.0

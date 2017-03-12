@@ -26,10 +26,8 @@ ActiveRecord::Schema.define(version: 20170228074438) do
     t.integer  "size"
     t.integer  "amount",         default: 0,     null: false
     t.boolean  "own",            default: false
-    t.integer  "provider_id"
     t.datetime "created_at",                     null: false
     t.datetime "updated_at",                     null: false
-    t.index ["provider_id"], name: "index_products_on_provider_id", using: :btree
   end
 
   create_table "providers", force: :cascade do |t|
@@ -41,9 +39,11 @@ ActiveRecord::Schema.define(version: 20170228074438) do
   create_table "purchase_orders", force: :cascade do |t|
     t.datetime "purchase_date", null: false
     t.integer  "product_id"
+    t.integer  "provider_id"
     t.datetime "created_at",    null: false
     t.datetime "updated_at",    null: false
     t.index ["product_id"], name: "index_purchase_orders_on_product_id", using: :btree
+    t.index ["provider_id"], name: "index_purchase_orders_on_provider_id", using: :btree
   end
 
   create_table "sales", force: :cascade do |t|

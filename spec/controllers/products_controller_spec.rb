@@ -13,101 +13,33 @@ RSpec.describe ProductsController, type: :controller do
       expect(json).to eq []
     end
 
-    it 'returns a list with one product' do
+    it 'returns a list without own products' do
       FactoryGirl.create(:product)
+      get :index
+      json = JSON.parse(response.body)['products']
+
+      expect(response.status).to eq 200
+      expect(json.size).to eq 0
+    end
+
+    it 'returns a list with one own products' do
+      product = FactoryGirl.create(:product, {own: true})
+      provider = FactoryGirl.create(:provider)
+      FactoryGirl.create(:purchase_order, {product: product, provider: provider})
+
       get :index
       json = JSON.parse(response.body)['products']
 
       expect(response.status).to eq 200
       expect(json.size).to eq 1
     end
-  end
 
-  describe 'GET show' do
-    it 'returns one product with provider' do
-      product = FactoryGirl.create(:product)
-      get :show, params: { id: product.id }
-      json = JSON.parse(response.body)['product']
-
-      expect(json['id']).to eq product.id
-      expect(json['provider']['id']).to eq product.provider.id
-    end
-  end
-
-  describe 'POST create' do
-    it 'returns 422' do
-      params = {brand: 'A brand', article: 'OJ1', color: 'Negro'}
-      post :create, params: {product: params}
-      json = JSON.parse(response.body)
-
-      expect(response.status).to eq 422
-      expect(json['provider'].first).to eq 'must exist'
-      expect(json['provider'][1]).to eq 'debe existir'
-    end
-
-    it 'creates one product' do
-      provider = FactoryGirl.create(:provider, name: 'Super calzado')
-      time = '2017-01-01'
-      params = {brand: 'A brand', article: 'OJ1', color: 'Negro', provider: provider.as_json, purchase_date: time}
-      post :create, params: {product: params}
-      json = JSON.parse(response.body)['product']
-
-      expect(json['article']).to eq 'OJ1'
-      expect(json['color']).to eq 'Negro'
-      expect(json['provider']['name']).to eq 'Super calzado'
-    end
-
-    it 'creates a purchase order' do
-      provider = FactoryGirl.create(:provider, name: 'Super calzado')
-      params = {brand: 'A brand', article: 'OJ1', color: 'Negro', provider: provider.as_json, purchase_date: '2017-01-01'}
-      post :create, params: {product: params}
-      json = JSON.parse(response.body)['product']
-
-      expect(PurchaseOrder.all.size).to eq 1
-      expect(PurchaseOrder.first.product.id).to eq json['id']
-      expect(PurchaseOrder.first.purchase_date).to eq Time.zone.parse('2017-01-01')
-    end
-
-    describe 'existing products' do
-      it 'should increase the amount, and not create other one' do
-        provider = FactoryGirl.create(:provider, name: 'Bla')
-        FactoryGirl.create(:product, brand: 'Brand', article: 'ABC123', size: '40-41', color: 'Black', amount: 3, provider: provider)
-
-        expect(Product.all.size).to eq 1
-
-        params = {brand: 'Brand', article: 'ABC123', size: '40-41', color: 'Black', amount: 3, provider: provider.as_json}
-
-        post :create, params: {product: params}
-        json = JSON.parse(response.body)['product']
-
-        expect(Product.all.size).to eq 1
-        expect(json['amount']).to eq 6
-      end
-
-      it 'update the pruchase price' do
-        provider = FactoryGirl.create(:provider, name: 'Bla')
-        FactoryGirl.create(:product, brand: 'Brand', article: 'ABC123', size: '40-41', color: 'Black', purchase_price: 10, provider: provider)
-
-        expect(Product.all.size).to eq 1
-
-        params = {brand: 'Brand', article: 'ABC123', size: '40-41', color: 'Black', amount: 3, purchase_price: 20, provider: provider.as_json}
-
-        post :create, params: {product: params}
-        json = JSON.parse(response.body)['product']
-
-        expect(Product.all.size).to eq 1
-        expect(json['purchase_price']).to eq 20
-      end
-    end
   end
 
   describe 'PUT/PATCH update' do
     it 'update product' do
       product = FactoryGirl.create(:product)
-      get :show, params: {id: product.id}
-      json = JSON.parse(response.body)['product']
-      expect(json['id']).to eq product.id
-      expect(json['color']).to be_nil
+      expect(Product.find(product.id).color).to be_nil
 
       params = {color: 'Black'}
       put :update, params: {id: product.id, product: params}
