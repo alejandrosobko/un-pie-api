@@ -7,7 +7,7 @@ FactoryGirl.define do
   factory :complete_sale, class: Sale do
     sale_date DateTime.now.in_time_zone
     sale_price 120
-    product_id 1
+    product
   end
 
 end

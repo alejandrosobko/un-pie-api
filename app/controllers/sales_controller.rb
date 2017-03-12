@@ -24,23 +24,38 @@ class SalesController < ApplicationController
     end
   end
 
+  #GET /sales/:from/:to
+  def earnings
+    @sales = get_sales_in_range
+
+    render json: @sales
+  end
+
   private
 
   def sale_params
-    params.require(:sale).permit(:sale_date, :sale_price, :product_id)
+    params.require(:sale).permit(:sale_date, :sale_price)
   end
 
   def create_sale
-    @sale = Sale.new(sale_params)
-    @sale.product_id = sale_params[:product_id]
+    @sale = Sale.new
+    @sale.product = Product.find(params[:sale][:product][:id])
     @sale.sale_date = Time.zone.parse(sale_params[:sale_date] || Time.zone.now)
+    @sale.sale_price = sale_params[:sale_price]
+
     reduce_product_amount
   end
 
   def reduce_product_amount
-    product = Product.find(@sale.product_id)
-    product.amount -= 1
-    product.save!
+    @sale.product.amount -= 1
+    @sale.product.save!
+  end
+
+  def get_sales_in_range
+    from = Time.zone.parse(params[:from])
+    to = Time.zone.parse(params[:to])
+
+    Sale.all.select { |sale| sale.sale_date >= from && sale.sale_date <= to }
   end
 
 end

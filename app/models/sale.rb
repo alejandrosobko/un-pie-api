@@ -1,4 +1,4 @@
 class Sale < ApplicationRecord
-  has_one :product
-  validates_presence_of :product_id, :sale_date, :sale_price
+  belongs_to :product
+  validates_presence_of :sale_date, :sale_price
 end

@@ -3,7 +3,9 @@ Rails.application.routes.draw do
 
   resources :products, only: [:index, :show, :update]
   resources :providers, only: [:index, :update, :destroy]
-  resources :sales, only: [:index, :show, :create]
+  resources :sales, only: [:index, :show, :create] do
+    get :earnings, on: :member
+  end
   resources :services, only: [:index, :create, :destroy]
   resources :purchase_orders, only: [:index, :show, :create]
 end

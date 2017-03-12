@@ -24,22 +24,25 @@ RSpec.describe SalesController, type: :controller do
   describe 'POST index' do
     it 'creates a sale' do
       product = FactoryGirl.create(:product)
+      product = FactoryGirl.attributes_for(:product, {id: product.id})
 
-      params = {sale: {sale_price: 120, sale_date: '20/01/2016', product_id: product.id}}
+      params = {sale: {sale_price: 120, sale_date: '20/01/2016', product: product}}
       post :create, params: params
       json = JSON.parse(response.body)['sale']
 
-      expect(json['product_id']).to eq product.id
+      expect(json['product']['id']).to eq product[:id]
       expect(json['sale_price']).to eq 120
       expect(json['sale_date']).to eq '2016-01-20T00:00:00.000-03:00'
     end
 
     it 'reduces the amount of the product sold' do
       product = FactoryGirl.create(:product, amount: 3)
-      params = {sale: {sale_price: 120, sale_date: '20/01/2016', product_id: product.id}}
+      product = FactoryGirl.attributes_for(:product, {id: product.id})
+
+      params = {sale: {sale_price: 120, sale_date: '20/01/2016', product: product}}
       post :create, params: params
 
-      expect(Product.find(product.id).amount).to eq 2
+      expect(Product.find(product[:id]).amount).to eq 2
     end
   end
 
