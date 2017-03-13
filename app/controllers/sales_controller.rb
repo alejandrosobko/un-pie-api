@@ -24,11 +24,11 @@ class SalesController < ApplicationController
     end
   end
 
-  #GET /sales/:from/:to
+  #GET /sales/earnings
   def earnings
     @sales = get_sales_in_range
 
-    render json: @sales
+    render json: {sales: @sales}
   end
 
   private
@@ -52,6 +52,8 @@ class SalesController < ApplicationController
   end
 
   def get_sales_in_range
+    return Sale.all if params[:from] == nil || params[:to] == nil
+
     from = Time.zone.parse(params[:from])
     to = Time.zone.parse(params[:to])
 
