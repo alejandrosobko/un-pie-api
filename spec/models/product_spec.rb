@@ -45,4 +45,35 @@ RSpec.describe Product, type: :model do
     end
   end
 
+  describe 'audited' do
+    it 'update' do
+      product = FactoryGirl.create(:product)
+
+      expect(product.audits.size).to eq 1
+      expect(product.audits.first.action).to eq 'create'
+      expect(product.audits.first.version).to eq 1
+
+      product.update_attributes!(brand: 'new brand')
+
+      expect(product.audits.size).to eq 2
+      expect(product.audits.last.action).to eq 'update'
+      expect(product.audits.last.version).to eq 2
+    end
+
+    it 'destroy' do
+      product = FactoryGirl.create(:product)
+
+      expect(product.audits.size).to eq 1
+      expect(product.audits.first.action).to eq 'create'
+      expect(product.audits.first.version).to eq 1
+
+      product.destroy!
+
+      expect(product.audits.size).to eq 2
+      expect(product.audits.last.action).to eq 'destroy'
+      expect(product.audits.last.version).to eq 2
+      expect(Product.all.size).to eq 0
+    end
+  end
+
 end

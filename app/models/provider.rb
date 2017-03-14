@@ -4,4 +4,5 @@ class Provider < ApplicationRecord
 
   validates_presence_of :name, message: 'debe existir'
   validates_uniqueness_of :name, message: 'debe ser único'
+  audited
 end

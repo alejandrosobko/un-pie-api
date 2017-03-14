@@ -26,4 +26,34 @@ RSpec.describe Provider, type: :model do
     end
   end
 
+  describe 'audited' do
+    it 'update' do
+      provider = FactoryGirl.create(:provider)
+
+      expect(provider.audits.size).to eq 1
+      expect(provider.audits.first.action).to eq 'create'
+      expect(provider.audits.first.version).to eq 1
+
+      provider.update_attributes!(name: 'new name')
+
+      expect(provider.audits.size).to eq 2
+      expect(provider.audits.last.action).to eq 'update'
+      expect(provider.audits.last.version).to eq 2
+    end
+
+    it 'destroy' do
+      provider = FactoryGirl.create(:provider)
+
+      expect(provider.audits.size).to eq 1
+      expect(provider.audits.first.action).to eq 'create'
+      expect(provider.audits.first.version).to eq 1
+
+      provider.destroy!
+
+      expect(provider.audits.size).to eq 2
+      expect(provider.audits.last.action).to eq 'destroy'
+      expect(provider.audits.last.version).to eq 2
+      expect(Product.all.size).to eq 0
+    end
+  end
 end
