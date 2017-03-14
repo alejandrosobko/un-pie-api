@@ -26,6 +26,12 @@ class ServicesController < ApplicationController
     @service.destroy!
   end
 
+  def logs
+    logs = Service.all.map { |service| service.audits }.flatten
+
+    render json: {logs: logs}
+  end
+
   private
 
   def service_params

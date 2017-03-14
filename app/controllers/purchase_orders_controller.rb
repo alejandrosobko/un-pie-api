@@ -20,6 +20,12 @@ class PurchaseOrdersController < ApplicationController
     end
   end
 
+  def logs
+    logs = PurchaseOrder.all.map { |purchase_order| purchase_order.audits }.flatten
+
+    render json: {logs: logs}
+  end
+
   private
 
   def parse_params # TODO: Arreglar el serializer y eliminar esto
