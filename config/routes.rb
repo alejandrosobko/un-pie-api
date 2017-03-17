@@ -20,4 +20,8 @@ Rails.application.routes.draw do
   resources :sales, only: [:index, :show, :create] do
     get 'sales/earnings', :earnings, on: :collection
   end
+
+  resources :users, only: [:show, :create, :update] do
+    get 'users/logs', :logs, on: :collection
+  end
 end
