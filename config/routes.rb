@@ -6,15 +6,15 @@ Rails.application.routes.draw do
   end
 
   resources :providers, only: [:index, :update, :destroy]do
-    get 'products/logs', :logs, on: :collection
+    get 'providers/logs', :logs, on: :collection
   end
 
   resources :services, only: [:index, :create, :destroy]do
-    get 'products/logs', :logs, on: :collection
+    get 'services/logs', :logs, on: :collection
   end
 
   resources :purchase_orders, only: [:index, :show, :create]do
-    get 'products/logs', :logs, on: :collection
+    get 'purchase_orders/logs', :logs, on: :collection
   end
 
   resources :sales, only: [:index, :show, :create] do
