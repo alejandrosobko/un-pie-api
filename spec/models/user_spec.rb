@@ -11,7 +11,7 @@ RSpec.describe User, type: :model do
       expect(user.name).to eq 'Ale'
       expect(user.surname).to eq 'Sobko'
       expect(user.email).to eq 'ale@mail.com'
-      expect(Password.new(user.password).is_password?('PassW0rd1')).to eq true
+      expect(user.password).to eq 'PassW0rd1'
     end
 
     describe 'do not create a new user' do
@@ -34,6 +34,14 @@ RSpec.describe User, type: :model do
         expect(user.save).to eq false
         expect(user.errors.messages[:password]).to eq ['password is not strong']
       end
+
+      it 'does not match password confirmation' do
+        user = User.new({name: 'ale', surname: 'Sobko', email: 'asd@mail.com', password: 'SuperSecure10', password_confirmation: 'SuperInvalid'})
+
+        expect(user.save).to eq false
+        expect(user.errors.messages[:password_confirmation]).to eq ["doesn't match Password"]
+      end
+
     end
 
   end
@@ -77,5 +85,20 @@ RSpec.describe User, type: :model do
       expect(user.audits.last.version).to eq 2
       expect(Product.all.size).to eq 0
     end
+  end
+
+  describe 'authenticate' do
+    it 'authenticates' do
+      user = User.create!({name: 'Ale', surname: 'Sobko', email: 'ale@mail.com', password: 'PassW0rd1'})
+
+      expect(user.authenticate('PassW0rd1')).to eq user
+    end
+
+    it 'does not authenticates' do
+      user = User.create!({name: 'Ale', surname: 'Sobko', email: 'ale@mail.com', password: 'PassW0rd1'})
+
+      expect(user.authenticate('passW0rd1')).to eq false
+    end
+
   end
 end

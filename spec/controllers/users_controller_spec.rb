@@ -13,7 +13,6 @@ RSpec.describe UsersController, type: :controller do
       expect(json['user']).to eq 'created'
       expect(user.surname).to eq 'sobko'
       expect(user.email).to eq 'ale@mail.com'
-      expect(Password.new(user.password).is_password?('veryStrong2017')).to eq true
     end
 
     describe 'failing' do
@@ -43,6 +42,15 @@ RSpec.describe UsersController, type: :controller do
         json = JSON.parse(response.body)
 
         expect(json['email']).to eq ['has already been taken']
+      end
+
+      it 'with invalid password confirmation' do
+        params = {user: {name: 'Ale', surname: 'sobko', email: 'ale@mail.com', password: 'Password_123', password_confirmation: 'otherPassw2'}}
+        post :create, params: params
+
+        json = JSON.parse(response.body)
+
+        expect(json['password_confirmation']).to eq ["doesn't match Password"]
       end
     end
   end
