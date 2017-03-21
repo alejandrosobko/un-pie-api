@@ -2,6 +2,11 @@ require 'rails_helper'
 
 RSpec.describe SalesController, type: :controller do
 
+  before(:each) do
+    token = Knock::AuthToken.new(payload: {sub: FactoryGirl.create(:user).id}).token
+    @request.headers['Authorization'] = "Bearer #{token}"
+  end
+
   describe 'GET index' do
     it 'returns an empty list' do
       get :index

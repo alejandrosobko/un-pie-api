@@ -2,7 +2,12 @@ require 'rails_helper'
 
 RSpec.describe ProductsController, type: :controller do
 
-  before(:each) { Time.zone = 'Buenos Aires' }
+  before(:each) do
+    Time.zone = 'Buenos Aires'
+
+    token = Knock::AuthToken.new(payload: {sub: FactoryGirl.create(:user).id}).token
+    @request.headers['Authorization'] = "Bearer #{token}"
+  end
 
   describe 'GET index' do
     it 'returns an empty list' do

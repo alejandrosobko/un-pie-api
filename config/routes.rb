@@ -24,4 +24,7 @@ Rails.application.routes.draw do
   resources :users, only: [:show, :create, :update] do
     get 'users/logs', :logs, on: :collection
   end
+
+  post 'user_token' => 'user_token#create'
+
 end

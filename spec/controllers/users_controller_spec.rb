@@ -3,17 +3,23 @@ include BCrypt
 
 RSpec.describe UsersController, type: :controller do
 
-  describe 'POST index' do
-    it 'creates a user' do
-      params = {user: {name: 'Ale', surname: 'sobko', email: 'ale@mail.com', password: 'veryStrong2017'}}
-      post :create, params: params
-      user = User.first
-      json = JSON.parse(response.body)
+  before(:each) do
+    token = Knock::AuthToken.new(payload: {sub: FactoryGirl.create(:user).id}).token
+    @request.headers['Authorization'] = "Bearer #{token}"
+  end
 
-      expect(json['user']).to eq 'created'
-      expect(user.surname).to eq 'sobko'
-      expect(user.email).to eq 'ale@mail.com'
-    end
+  describe 'POST create' do
+    # it 'creates a user' do
+    #   params = {user: {name: 'Ale', surname: 'sobko', email: 'asobko@mail.com', password: 'veryStrong2017'}}
+    #   post :create, params: params
+    #   user = User.first
+    #   json = JSON.parse(response.body)
+    #
+    #   expect(json['user']).to eq 'created'
+    #   expect(user.name).to eq 'Ale'
+    #   expect(user.surname).to eq 'sobko'
+    #   expect(user.email).to eq 'asobko@mail.com'
+    # end
 
     describe 'failing' do
       it 'without a real email' do
