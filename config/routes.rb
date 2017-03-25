@@ -21,7 +21,7 @@ Rails.application.routes.draw do
     get 'sales/earnings', :earnings, on: :collection
   end
 
-  resources :users, only: [:show, :create, :update] do
+  resources :users, only: [:index, :show, :create, :update] do
     get 'users/logs', :logs, on: :collection
   end
 

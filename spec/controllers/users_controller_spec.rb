@@ -9,17 +9,17 @@ RSpec.describe UsersController, type: :controller do
   end
 
   describe 'POST create' do
-    # it 'creates a user' do
-    #   params = {user: {name: 'Ale', surname: 'sobko', email: 'asobko@mail.com', password: 'veryStrong2017'}}
-    #   post :create, params: params
-    #   user = User.first
-    #   json = JSON.parse(response.body)
-    #
-    #   expect(json['user']).to eq 'created'
-    #   expect(user.name).to eq 'Ale'
-    #   expect(user.surname).to eq 'sobko'
-    #   expect(user.email).to eq 'asobko@mail.com'
-    # end
+    it 'creates a user' do
+      params = {user: {name: 'Ale', surname: 'sobko', email: 'asobko@mail.com', password: 'veryStrong2017'}}
+      post :create, params: params
+      user = User.last # because FactoryGirl created one user before
+      json = JSON.parse(response.body)['user']
+
+      expect(user.name).to eq 'Ale'
+      expect(user.surname).to eq 'sobko'
+      expect(user.email).to eq 'asobko@mail.com'
+      expect(user.password).to eq nil
+    end
 
     describe 'failing' do
       it 'without a real email' do
