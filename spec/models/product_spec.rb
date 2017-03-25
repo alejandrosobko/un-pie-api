@@ -1,7 +1,7 @@
 require 'rails_helper'
 
 RSpec.describe Product, type: :model do
-  
+
   describe 'new product' do
     it 'should not save an empty product' do
       product = Product.new
@@ -41,7 +41,7 @@ RSpec.describe Product, type: :model do
     it 'should raise exception' do
       product = Product.new
 
-      expect{product.save!}.to raise_exception(ActiveRecord::RecordInvalid)
+      expect { product.save! }.to raise_exception(ActiveRecord::RecordInvalid)
     end
   end
 

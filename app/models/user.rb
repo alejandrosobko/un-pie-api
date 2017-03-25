@@ -11,9 +11,9 @@ class User < ApplicationRecord
   private
 
   def strong_password
-    unless /\A(?=.{6,})(?=.*\d)(?=.*[a-z])(?=.*[A-Z])/x.match(self.password)
-      errors.add(:password, 'password is not strong')
-    end
+    match_password = /\A(?=.{6,})(?=.*\d)(?=.*[a-z])(?=.*[A-Z])/x.match(password)
+
+    errors.add(:password, 'password is not strong') unless match_password
   end
 
 end

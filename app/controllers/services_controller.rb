@@ -27,7 +27,7 @@ class ServicesController < ApplicationController
   end
 
   def logs
-    logs = Service.all.map { |service| service.audits }.flatten
+    logs = Service.all.map(&:audits).flatten
 
     render json: {logs: logs}
   end

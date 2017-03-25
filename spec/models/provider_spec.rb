@@ -22,7 +22,7 @@ RSpec.describe Provider, type: :model do
 
       provider2 = Provider.new
       provider2.name = 'Some name'
-      expect{provider2.save!}.to raise_error(ActiveRecord::RecordInvalid)
+      expect { provider2.save! }.to raise_error(ActiveRecord::RecordInvalid)
     end
   end
 

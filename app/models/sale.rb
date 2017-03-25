@@ -4,7 +4,7 @@ class Sale < ApplicationRecord
 
   def as_json(args)
     json = super(args)
-    json[:product] = self.product.as_json
+    json[:product] = product.as_json
     json
   end
 end

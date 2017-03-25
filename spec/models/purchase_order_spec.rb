@@ -28,8 +28,8 @@ RSpec.describe PurchaseOrder, type: :model do
       product = FactoryGirl.build(:product)
       provider = FactoryGirl.build(:provider)
       time = Time.zone.now
-      PurchaseOrder.create!({product: product, provider: provider, purchase_date: time})
-      PurchaseOrder.create!({product: product, provider: provider, purchase_date: time})
+      PurchaseOrder.create!(product: product, provider: provider, purchase_date: time)
+      PurchaseOrder.create!(product: product, provider: provider, purchase_date: time)
 
       expect(PurchaseOrder.all.size).to eq 2
     end

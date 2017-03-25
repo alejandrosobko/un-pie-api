@@ -21,7 +21,7 @@ class PurchaseOrdersController < ApplicationController
   end
 
   def logs
-    logs = PurchaseOrder.all.map { |purchase_order| purchase_order.audits }.flatten
+    logs = PurchaseOrder.all.map(&:audits).flatten
 
     render json: {logs: logs}
   end
@@ -33,8 +33,8 @@ class PurchaseOrdersController < ApplicationController
   end
 
   def product_params
-    params.require(:purchase_order).require(:product).permit(:brand, :article, :color, :description, :purchase_price, :sale_price, :cash_price,
-                                                             :size, :amount, :own)
+    params.require(:purchase_order).require(:product).permit(:brand, :article, :color, :description, :purchase_price,
+                                                             :sale_price, :cash_price, :size, :amount, :own)
   end
 
   def provider_params
@@ -44,11 +44,10 @@ class PurchaseOrdersController < ApplicationController
   def find_or_initialize_product
     return unless product_params
 
-    product = Product.find_by({brand: product_params[:brand], article: product_params[:article],
-                               size: product_params[:size], color: product_params[:color]})
+    product = Product.find_by(brand: product_params[:brand], article: product_params[:article],
+                              size: product_params[:size], color: product_params[:color])
 
     if product
-      # product.providers.push(find_or_initialize_provider) unless contains_provider?(product)
       product.purchase_price = product_params[:purchase_price].to_i
       product.amount += product_params[:amount].to_i
       product.own = true

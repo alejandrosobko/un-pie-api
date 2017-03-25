@@ -24,12 +24,13 @@ class ProductsController < ApplicationController
   end
 
   def logs
-    logs = Product.all.map { |product| product.audits }.flatten
+    logs = Product.all.map(&:audits).flatten
 
     render json: {logs: logs}
   end
 
   private
+
   # Use callbacks to share common setup or constraints between actions.
   def set_product
     @product = Product.find(params[:id])
@@ -47,7 +48,7 @@ class ProductsController < ApplicationController
     params[:product][:sale_price]     ||= 0.0
     params[:product][:cash_price]     ||= 0.0
     purchase_date = params[:product][:purchase_date] || Time.zone.now.to_s
-    params[:product][:purchase_date]  = Time.zone.parse(purchase_date)
+    params[:product][:purchase_date] = Time.zone.parse(purchase_date)
   end
 
 end

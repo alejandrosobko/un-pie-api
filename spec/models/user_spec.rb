@@ -5,7 +5,7 @@ RSpec.describe User, type: :model do
 
   describe 'new user' do
     it 'creates a new user' do
-      user = User.new({name: 'Ale', surname: 'Sobko', email: 'ale@mail.com', password: 'PassW0rd1'})
+      user = User.new(name: 'Ale', surname: 'Sobko', email: 'ale@mail.com', password: 'PassW0rd1')
 
       expect(user.save).to eq true
       expect(user.name).to eq 'Ale'
@@ -16,27 +16,27 @@ RSpec.describe User, type: :model do
 
     describe 'do not create a new user' do
       it 'requires name' do
-        user = User.new({surname: 'Sobko', email: 'sad@mail.com', password: 'Password1'})
+        user = User.new(surname: 'Sobko', email: 'sad@mail.com', password: 'Password1')
 
         expect(user.save).to eq false
       end
 
       it 'requires a real email' do
-        user = User.new({name: 'ale', surname: 'Sobko', email: 'asd', password: 'Password1'})
+        user = User.new(name: 'ale', surname: 'Sobko', email: 'asd', password: 'Password1')
 
         expect(user.save).to eq false
         expect(user.errors.messages[:email]).to eq ['is invalid']
       end
 
       it 'requires a strong password' do
-        user = User.new({name: 'ale', surname: 'Sobko', email: 'asd@mail.com', password: 'abc'})
+        user = User.new(name: 'ale', surname: 'Sobko', email: 'asd@mail.com', password: 'abc')
 
         expect(user.save).to eq false
         expect(user.errors.messages[:password]).to eq ['password is not strong']
       end
 
       it 'does not match password confirmation' do
-        user = User.new({name: 'ale', surname: 'Sobko', email: 'asd@mail.com', password: 'SuperSecure10', password_confirmation: 'SuperInvalid'})
+        user = User.new(name: 'ale', surname: 'Sobko', email: 'asd@mail.com', password: 'SuperSecure10', password_confirmation: 'SuperInvalid')
 
         expect(user.save).to eq false
         expect(user.errors.messages[:password_confirmation]).to eq ["doesn't match Password"]
@@ -48,8 +48,8 @@ RSpec.describe User, type: :model do
 
   describe 'existing users' do
     it 'does not create with repeated email' do
-      user1 = User.new({name: 'ale', surname: 'Sobko', email: 'ale1@mail.com', password: 'Password1'})
-      user2 = User.new({name: 'ale', surname: 'Sobko', email: 'ale1@mail.com', password: 'Password1'})
+      user1 = User.new(name: 'ale', surname: 'Sobko', email: 'ale1@mail.com', password: 'Password1')
+      user2 = User.new(name: 'ale', surname: 'Sobko', email: 'ale1@mail.com', password: 'Password1')
 
       expect(user1.save).to eq true
       expect(user2.save).to eq false
@@ -89,13 +89,13 @@ RSpec.describe User, type: :model do
 
   describe 'authenticate' do
     it 'authenticates' do
-      user = User.create!({name: 'Ale', surname: 'Sobko', email: 'ale@mail.com', password: 'PassW0rd1'})
+      user = User.create!(name: 'Ale', surname: 'Sobko', email: 'ale@mail.com', password: 'PassW0rd1')
 
       expect(user.authenticate('PassW0rd1')).to eq user
     end
 
     it 'does not authenticates' do
-      user = User.create!({name: 'Ale', surname: 'Sobko', email: 'ale@mail.com', password: 'PassW0rd1'})
+      user = User.create!(name: 'Ale', surname: 'Sobko', email: 'ale@mail.com', password: 'PassW0rd1')
 
       expect(user.authenticate('passW0rd1')).to eq false
     end

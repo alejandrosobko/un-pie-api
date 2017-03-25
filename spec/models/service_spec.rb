@@ -11,7 +11,7 @@ RSpec.describe Service, type: :model do
 
     it 'creates a complete service' do
       payment_date = DateTime.now
-      service = Service.new({name: 'Gas', cost: 200.50, payment_date: payment_date})
+      service = Service.new(name: 'Gas', cost: 200.50, payment_date: payment_date)
 
       expect(service.save).to eq true
       expect(service.cost).to eq 200.50
