@@ -13,17 +13,6 @@ class ProvidersController < ApplicationController
     render json: @provider
   end
 
-  # POST /providers
-  def create
-    @provider = Provider.new(provider_params)
-
-    if @provider.save
-      render json: @provider, status: :created, location: @provider
-    else
-      render json: @provider.errors, status: :unprocessable_entity
-    end
-  end
-
   # PATCH/PUT /providers/1
   def update
     if @provider.update(provider_params)
