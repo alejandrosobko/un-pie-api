@@ -1,5 +1,5 @@
 class ServicesController < ApplicationController
-
+  before_filter :set_service, only: [:update]
   before_filter :parse_date, only: [:create]
 
   # GET /services
@@ -7,6 +7,15 @@ class ServicesController < ApplicationController
     @services = Service.all
 
     render json: @services
+  end
+
+  # PATCH/PUT /services/1
+  def update
+    if @service.update(service_params)
+      render json: @service
+    else
+      render json: @service.errors, status: :unprocessable_entity
+    end
   end
 
   # POST /services
@@ -33,6 +42,10 @@ class ServicesController < ApplicationController
   end
 
   private
+
+  def set_service
+    @service = Service.find(params[:id])
+  end
 
   def service_params
     params.require(:service).permit(:name, :cost, :payment_date)
