@@ -11,6 +11,7 @@ class CreateProducts < ActiveRecord::Migration[5.0]
       t.integer :size
       t.integer :amount, default: 0, null: false
       t.boolean :own, default: false
+      t.belongs_to :provider, index: true
 
       t.timestamps
     end

@@ -1,7 +1,7 @@
 class PurchaseOrder < ApplicationRecord
-  belongs_to :product, autosave: true
-  belongs_to :provider, autosave: true
+  belongs_to :product
 
-  validates_presence_of :purchase_date, :product, :provider
+  validates_presence_of :purchase_date, :product
   audited
+
 end

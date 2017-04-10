@@ -4,6 +4,7 @@ class ProductsController < ApplicationController
 
   # GET /products
   def index
+    # @products = joined_products(Product.where(own: true))
     @products = Product.where(own: true)
 
     render json: @products
@@ -50,5 +51,36 @@ class ProductsController < ApplicationController
     purchase_date = params[:product][:purchase_date] || Time.zone.now.to_s
     params[:product][:purchase_date] = Time.zone.parse(purchase_date)
   end
+
+  # Mover a un servicio
+
+  def joined_products(products)
+    result = []
+
+    products.each do |p|
+      similar = similar_product(p, result)
+
+      if similar
+        p.amount = p.amount + similar.amount
+      else
+        result.push(p)
+      end
+    end
+
+    result
+  end
+
+  def similar_product(product, products)
+    products.find { |p| similar_attributes(p, product) }
+  end
+
+  def similar_attributes(product1, product2)
+    product1.brand.to_s     == product2.brand.to_s   &&
+      product1.article.to_s == product2.article.to_s &&
+      product1.size.to_s    == product2.size.to_s    &&
+      product1.color.to_s   == product2.color.to_s
+  end
+
+  # fin servicio
 
 end
