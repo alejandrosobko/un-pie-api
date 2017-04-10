@@ -99,7 +99,7 @@ class ProductsController < ApplicationController
   end
 
   def create_purchase_order!
-    date = params[:product].fetch(:purchase_order, {}).fetch(:purchase_date, Time.zone.now.to_s)
+    date = params[:product].fetch(:purchase_date, Time.zone.now).to_s
     purchase_order = PurchaseOrder.new
     purchase_order.purchase_date = Time.parse(date)
     purchase_order.product_attributes = @product.attributes
