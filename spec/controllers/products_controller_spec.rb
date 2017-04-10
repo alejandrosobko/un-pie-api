@@ -69,7 +69,7 @@ RSpec.describe ProductsController, type: :controller do
 
       expect(PurchaseOrder.all.size).to eq 1
       expect(PurchaseOrder.first.product_attributes['brand']).to eq json['brand']
-      expect(PurchaseOrder.first.purchase_date).to eq Time.zone.parse('2017-01-01')
+      expect(PurchaseOrder.first.purchase_date).to eq Time.zone.parse('2017-01-01T00:00:00.000-03:00')
     end
 
     describe 'existing products' do
