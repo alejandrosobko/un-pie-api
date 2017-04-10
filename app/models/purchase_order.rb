@@ -1,7 +1,7 @@
 class PurchaseOrder < ApplicationRecord
-  belongs_to :product
+  serialize :product_attributes
 
-  validates_presence_of :purchase_date, :product
+  validates_presence_of :purchase_date, :product_attributes
   audited
 
 end

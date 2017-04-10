@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20170409180054) do
+ActiveRecord::Schema.define(version: 20170316033234) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -63,12 +63,11 @@ ActiveRecord::Schema.define(version: 20170409180054) do
   end
 
   create_table "purchase_orders", force: :cascade do |t|
-    t.datetime "purchase_date", null: false
-    t.integer  "product_id"
+    t.datetime "purchase_date",      null: false
     t.integer  "amount"
-    t.datetime "created_at",    null: false
-    t.datetime "updated_at",    null: false
-    t.index ["product_id"], name: "index_purchase_orders_on_product_id", using: :btree
+    t.text     "product_attributes", null: false
+    t.datetime "created_at",         null: false
+    t.datetime "updated_at",         null: false
   end
 
   create_table "sales", force: :cascade do |t|
@@ -86,13 +85,6 @@ ActiveRecord::Schema.define(version: 20170409180054) do
     t.datetime "payment_date",               null: false
     t.datetime "created_at",                 null: false
     t.datetime "updated_at",                 null: false
-  end
-
-  create_table "stocks", force: :cascade do |t|
-    t.integer  "products_id"
-    t.datetime "created_at",  null: false
-    t.datetime "updated_at",  null: false
-    t.index ["products_id"], name: "index_stocks_on_products_id", using: :btree
   end
 
   create_table "users", force: :cascade do |t|
