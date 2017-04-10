@@ -62,12 +62,15 @@ class PurchaseOrdersController < ApplicationController
     Provider.find_or_initialize_by(name: params[:purchase_order][:provider][:name])
   end
 
-  def initialize_purchase_order
+  def initialize_purchase_order # TODO: refactorear!
     date = params[:purchase_order][:purchase_date] || Time.zone.now.to_s
+    product = find_or_initialize_product
+    product.provider = find_or_initialize_provider
+    product.save!
     purchase_order = PurchaseOrder.new
     purchase_order.purchase_date = Time.parse(date)
-    purchase_order.product = find_or_initialize_product
-    purchase_order.provider = find_or_initialize_provider
+    purchase_order.product_attributes = product.attributes
+    purchase_order.amount = product.amount
     purchase_order
   end
 

@@ -28,9 +28,7 @@ RSpec.describe ProductsController, type: :controller do
     end
 
     it 'returns a list with one own products' do
-      product = FactoryGirl.create(:product, {own: true})
-      provider = FactoryGirl.create(:provider)
-      FactoryGirl.create(:purchase_order, product: product, provider: provider)
+      FactoryGirl.create(:product, own: true)
 
       get :index
       json = JSON.parse(response.body)['products']

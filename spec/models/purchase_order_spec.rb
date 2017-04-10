@@ -9,7 +9,7 @@ RSpec.describe PurchaseOrder, type: :model do
       expect(purchase_order.save).to eq true
     end
 
-    it 'does not save without product and provider' do
+    it 'does not save without product attributes' do
       purchase_order = PurchaseOrder.new
       purchase_order.purchase_date = Time.zone.now
 
@@ -18,18 +18,16 @@ RSpec.describe PurchaseOrder, type: :model do
 
     it 'does not save without purchase date' do
       purchase_order = PurchaseOrder.new
-      purchase_order.product = FactoryGirl.build(:product)
-      purchase_order.provider = FactoryGirl.build(:provider)
+      purchase_order.product_attributes = FactoryGirl.attributes_for(:product)
 
       expect(purchase_order.save).to eq false
     end
 
     it 'creates two equals purchase orders' do
-      product = FactoryGirl.build(:product)
-      provider = FactoryGirl.build(:provider)
+      product_attributes = FactoryGirl.attributes_for(:product)
       time = Time.zone.now
-      PurchaseOrder.create!(product: product, provider: provider, purchase_date: time)
-      PurchaseOrder.create!(product: product, provider: provider, purchase_date: time)
+      PurchaseOrder.create!(product_attributes: product_attributes, purchase_date: time)
+      PurchaseOrder.create!(product_attributes: product_attributes, purchase_date: time)
 
       expect(PurchaseOrder.all.size).to eq 2
     end

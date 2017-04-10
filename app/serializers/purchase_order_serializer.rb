@@ -1,5 +1,3 @@
 class PurchaseOrderSerializer < ActiveModel::Serializer
-  attributes :id, :purchase_date
-  belongs_to :product
-  belongs_to :provider
+  attributes :id, :purchase_date, :amount, :product_attributes
 end
