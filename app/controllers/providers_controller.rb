@@ -1,5 +1,5 @@
 class ProvidersController < ApplicationController
-  before_action :set_provider, only: [:show, :update, :destroy]
+  before_action :set_provider, only: [:show, :update]
 
   # GET /providers
   def index
@@ -20,11 +20,6 @@ class ProvidersController < ApplicationController
     else
       render json: @provider.errors, status: :unprocessable_entity
     end
-  end
-
-  # DELETE /providers/1
-  def destroy
-    @provider.destroy
   end
 
   def logs
