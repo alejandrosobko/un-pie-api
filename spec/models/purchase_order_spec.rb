@@ -26,8 +26,8 @@ RSpec.describe PurchaseOrder, type: :model do
     it 'creates two equals purchase orders' do
       product_attributes = FactoryGirl.attributes_for(:product)
       time = Time.zone.now
-      PurchaseOrder.create!(product_attributes: product_attributes, purchase_date: time)
-      PurchaseOrder.create!(product_attributes: product_attributes, purchase_date: time)
+      PurchaseOrder.create!(product_attributes: product_attributes, purchase_date: time, provider_name: 'Ale')
+      PurchaseOrder.create!(product_attributes: product_attributes, purchase_date: time, provider_name: 'Ale')
 
       expect(PurchaseOrder.all.size).to eq 2
     end

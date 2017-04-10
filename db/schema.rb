@@ -66,6 +66,7 @@ ActiveRecord::Schema.define(version: 20170316033234) do
     t.datetime "purchase_date",      null: false
     t.integer  "amount"
     t.text     "product_attributes", null: false
+    t.string   "provider_name",      null: false
     t.datetime "created_at",         null: false
     t.datetime "updated_at",         null: false
   end

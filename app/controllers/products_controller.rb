@@ -103,6 +103,7 @@ class ProductsController < ApplicationController
     purchase_order = PurchaseOrder.new
     purchase_order.purchase_date = Time.parse(date)
     purchase_order.product_attributes = @product.attributes
+    purchase_order.provider_name = @product.provider.name
     purchase_order.amount = product_params[:amount]
     purchase_order.save!
   end
