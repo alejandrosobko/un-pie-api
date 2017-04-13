@@ -4,10 +4,10 @@ class ProductsController < ApplicationController
 
   # GET /products
   def index
-    # @products = joined_products(Product.where(own: true))
-    @products = Product.where(own: true)
+    @products = joined_products(Product.where(own: true))
+    # @products = Product.where(own: true)
 
-    render json: @products
+    render json: {products: @products}
   end
 
   # GET /products/1
@@ -83,7 +83,7 @@ class ProductsController < ApplicationController
     product = Product.find_by(brand: product_params[:brand], article: product_params[:article],
                               size: product_params[:size], color: product_params[:color])
 
-    if product
+    if product && product.provider.name == params[:product][:provider][:name]
       product.purchase_price = product_params[:purchase_price].to_i
       product.amount += product_params[:amount].to_i
       product.own = true
@@ -118,7 +118,9 @@ class ProductsController < ApplicationController
       similar = similar_product(p, result)
 
       if similar
-        p.amount = p.amount + similar.amount
+        similar.amount = similar.amount + p.amount # Modifico el que ya agregue a la lista resultante
+        similar.sale_price = [p.sale_price, similar.sale_price].max
+        similar.cash_price = [p.cash_price, similar.cash_price].max
       else
         result.push(p)
       end
