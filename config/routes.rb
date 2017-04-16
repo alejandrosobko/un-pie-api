@@ -18,7 +18,9 @@ Rails.application.routes.draw do
     get :logs, on: :collection
   end
 
-  resources :sales, only: [:index, :show, :create, :earnings]
+  resources :sales, only: [:index, :show, :create] do
+    get :earnings, on: :collection
+  end
 
   resources :users, only: [:index, :show, :create, :update] do
     get :logs, on: :collection

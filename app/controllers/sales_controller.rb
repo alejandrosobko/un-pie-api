@@ -28,7 +28,7 @@ class SalesController < ApplicationController
   def earnings
     @sales = sales_in_range
 
-    render json: {sales: @sales}
+    render json: {sales: @sales}, include: %w(product provider)
   end
 
   private
@@ -59,7 +59,7 @@ class SalesController < ApplicationController
     from = Time.zone.parse(params[:from])
     to = Time.zone.parse(params[:to])
 
-    Sale.all.select { |sale| sale.sale_date >= from && sale.sale_date <= to }
+    Sale.all.select { |sale| sale.sale_date.between?(from, to + 1.day) }
   end
 
 end
