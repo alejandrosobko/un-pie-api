@@ -40,6 +40,7 @@ class SalesController < ApplicationController
   def create_sale
     @sale = Sale.new
     @sale.product = Product.find(params[:sale][:product][:id])
+    @sale.provider = @sale.product.providers.first
     @sale.sale_date = Time.zone.parse(sale_params[:sale_date] || Time.zone.now)
     @sale.sale_price = sale_params[:sale_price]
 
@@ -47,8 +48,9 @@ class SalesController < ApplicationController
   end
 
   def reduce_product_amount
-    @sale.product.amount -= 1
-    @sale.product.save!
+    stock = Stock.find_by(product_id: @sale.product.id, provider_id: @sale.product.providers.first.id)
+    stock.amount -= 1
+    stock.save!
   end
 
   def sales_in_range

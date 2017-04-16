@@ -40,19 +40,14 @@ RSpec.describe ProductsController, type: :controller do
   end
 
   describe 'POST create' do
-    it 'returns 422' do
+    it 'raise exception' do
       params = {brand: 'A brand', article: 'OJ1', color: 'Negro'}
-      post :create, params: {product: params}
-      json = JSON.parse(response.body)
-
-      expect(response.status).to eq 422
-      expect(json['provider'].first).to eq 'debe existir'
+      expect{post :create, params: {product: params}}.to raise_error("provider can't be blank")
     end
 
     it 'creates one product' do
-      provider = FactoryGirl.create(:provider, name: 'Super calzado')
       purchase_order = {purchase_date: '2017-01-01'}
-      params = {brand: 'A brand', article: 'OJ1', color: 'Negro', provider: provider.as_json, purchase_order: purchase_order}
+      params = {brand: 'A brand', article: 'OJ1', color: 'Negro', provider: {name: 'ale'}, purchase_order: purchase_order}
       post :create, params: {product: params}
       json = JSON.parse(response.body)['product']
 
@@ -61,9 +56,8 @@ RSpec.describe ProductsController, type: :controller do
     end
 
     it 'creates a purchase order' do
-      provider = FactoryGirl.create(:provider, name: 'Super calzado')
       purchase_order = {purchase_date: '2017-01-01'}
-      params = {brand: 'A brand', article: 'OJ1', color: 'Negro', provider: provider.as_json, purchase_order: purchase_order}
+      params = {brand: 'A brand', article: 'OJ1', color: 'Negro', provider: {name: 'Super calzado'}, purchase_order: purchase_order}
       post :create, params: {product: params}
       json = JSON.parse(response.body)['product']
 
@@ -72,9 +66,10 @@ RSpec.describe ProductsController, type: :controller do
     end
 
     describe 'existing products' do
-      it 'should increase the amount, and not create other one' do
+      it 'should increase the amount, and not create another one' do
         provider = FactoryGirl.create(:provider, name: 'Bla')
-        FactoryGirl.create(:product, brand: 'Brand', article: 'ABC123', size: '40-41', color: 'Black', amount: 3, provider: provider)
+        product = FactoryGirl.create(:product, brand: 'Brand', article: 'ABC123', size: '40-41', color: 'Black', providers: [provider])
+        Stock.create({amount: 3, product_id: product.id, provider_id: provider.id})
 
         expect(Product.all.size).to eq 1
 
@@ -89,7 +84,8 @@ RSpec.describe ProductsController, type: :controller do
 
       it 'update the purchase price' do
         provider = FactoryGirl.create(:provider, name: 'Bla')
-        FactoryGirl.create(:product, brand: 'Brand', article: 'ABC123', size: '40-41', color: 'Black', purchase_price: 10, provider: provider)
+        product = FactoryGirl.create(:product, brand: 'Brand', article: 'ABC123', size: '40-41', color: 'Black', purchase_price: 10, providers: [provider])
+        Stock.create!({product_id: product.id, provider_id: provider.id})
 
         expect(Product.all.size).to eq 1
 
@@ -100,6 +96,22 @@ RSpec.describe ProductsController, type: :controller do
 
         expect(Product.all.size).to eq 1
         expect(json['purchase_price']).to eq 20
+      end
+
+      it 'increases the amount' do
+        provider = FactoryGirl.create(:provider, name: 'Bla')
+        product = FactoryGirl.create(:product, brand: 'Brand', article: 'ABC123', size: '40-41', color: 'Black', providers: [provider])
+        Stock.create({amount: 3, product_id: product.id, provider_id: provider.id})
+
+        expect(Product.all.size).to eq 1
+
+        params = {brand: 'Brand', article: 'ABC123', size: '40-41', color: 'Black', amount: 3, provider: {name: 'Other provider'}}
+
+        post :create, params: {product: params}
+        json = JSON.parse(response.body)['product']
+
+        expect(Product.all.size).to eq 1
+        expect(json['amount']).to eq 6
       end
     end
   end
@@ -117,32 +129,22 @@ RSpec.describe ProductsController, type: :controller do
       expect(json['color']).to eq 'Black'
     end
 
-    it 'update amount' do
-      product = FactoryGirl.create(:product)
-      params = {amount: 3}
-      put :update, params: {id: product.id, product: params}
-      json = JSON.parse(response.body)['product']
-
-      expect(json['id']).to eq product.id
-      expect(json['amount']).to eq 3
-    end
   end
 
   describe 'add to stock' do
-    it 'increase stock and creates a new purchase order' do
-      provider = FactoryGirl.create(:provider, name: 'Bla')
-      params = {brand: 'Brand', article: 'ABC123', size: '40-41', color: 'Black', amount: 3, purchase_price: 20, provider: provider.as_json}
+    it 'increases stock and creates a new purchase order' do
+      provider = {name: 'Bla'}
+      params = {brand: 'Brand', article: 'ABC123', size: '40-41', color: 'Black', amount: 3, purchase_price: 20, provider: provider}
 
       post :create, params: {product: params}
       json = JSON.parse(response.body)['product']
 
       expect(PurchaseOrder.all.size).to eq 1
 
-      params = {amount: 3}
-      put :add_to_stock, params: {id: json['id'], product: params}
+      put :add_to_stock, params: {id: json['id'], product: {amount: 3}, provider: {id: Provider.first.id}}
       json = JSON.parse(response.body)['product']
 
-      expect(json['amount']).to eq 3
+      expect(json['amount']).to eq 6
       expect(PurchaseOrder.all.size).to eq 2
       expect(PurchaseOrder.last.amount).to eq 3
     end

@@ -1,13 +1,12 @@
 class ProductsController < ApplicationController
-  before_action :set_product, only: [:update, :destroy]
+  before_action :set_product, only: [:show, :update, :add_to_stock]
   before_action :parse_default_params
 
   # GET /products
   def index
-    @products = joined_products(Product.where(own: true))
-    # @products = Product.where(own: true)
+    @products = Product.where(own: true)
 
-    render json: {products: @products}
+    render json: @products
   end
 
   # GET /products/1
@@ -17,7 +16,7 @@ class ProductsController < ApplicationController
 
   # PATCH/PUT /products/1
   def update
-    if @product.update(product_params)
+    if @product.update(product_params) # && updated_purchase_order && updated_stock
       render json: @product
     else
       render json: @product.errors, status: :unprocessable_entity
@@ -27,10 +26,12 @@ class ProductsController < ApplicationController
   # POST /products
   def create
     @product = find_or_initialize_product
-    @product.provider = find_or_initialize_provider
+    provider = find_or_initialize_provider
+    @product.providers.push(provider) unless exists_provider?
 
     if @product.save
-      create_purchase_order!
+      create_stock!(provider)
+      create_purchase_order!(provider)
 
       render json: @product, status: :created, location: @product
     else
@@ -40,9 +41,7 @@ class ProductsController < ApplicationController
 
   # PUT /products/add_to_stock
   def add_to_stock
-    if @product.update(amount: product_params[:amount])
-      create_purchase_order!
-
+    if updated_stock
       render json: @product
     else
       render json: @product.errors, status: :unprocessable_entity
@@ -57,89 +56,63 @@ class ProductsController < ApplicationController
 
   private
 
-  # Use callbacks to share common setup or constraints between actions.
   def set_product
     @product = Product.find(params[:id])
   end
 
   def product_params
-    params.require(:product).permit(:brand, :article, :color, :description, :purchase_price, :sale_price, :cash_price,
-                                    :size, :amount, :own)
+    params.require(:product).permit(:brand, :article, :color, :description, :purchase_price, :sale_price, :cash_price, :size, :own)
   end
 
   def parse_default_params
     return unless params[:product]
-    params[:product][:amount]         ||= 0
+
     params[:product][:purchase_price] ||= 0.0
-    params[:product][:sale_price]     ||= 0.0
-    params[:product][:cash_price]     ||= 0.0
+    params[:product][:sale_price] ||= 0.0
+    params[:product][:cash_price] ||= 0.0
+    params[:product][:amount] = params[:product][:amount].to_i
     purchase_date = params[:product][:purchase_date] || Time.zone.now.to_s
     params[:product][:purchase_date] = Time.zone.parse(purchase_date)
   end
 
   def find_or_initialize_product
-    return unless product_params
-
-    product = Product.find_by(brand: product_params[:brand], article: product_params[:article],
-                              size: product_params[:size], color: product_params[:color])
-
-    if product && product.provider.name == params[:product][:provider][:name]
-      product.purchase_price = product_params[:purchase_price].to_i
-      product.amount += product_params[:amount].to_i
-      product.own = true
-      product
-    else
-      Product.new(product_params)
-    end
+    product = Product.find_or_initialize_by(brand: product_params[:brand], article: product_params[:article],
+                                            size: product_params[:size], color: product_params[:color])
+    product.assign_attributes(product_params)
+    product
   end
 
   def find_or_initialize_provider
-    return unless params[:product][:provider]
-    Provider.find_or_initialize_by(name: params[:product][:provider][:name])
+    raise "provider can't be blank" unless params[:product][:provider]
+
+    exists_provider? ||
+      Provider.find_or_initialize_by(name: params[:product][:provider][:name])
   end
 
-  def create_purchase_order!
-    date = params[:product].fetch(:purchase_date, Time.zone.now).to_s
+  def exists_provider?
+    @product.providers.find { |prov| prov.name == params[:product][:provider][:name] }
+  end
+
+  def create_stock!(provider)
+    stock = Stock.find_or_initialize_by(product_id: @product.id, provider_id: provider.id)
+    stock.amount += params[:product].fetch(:amount, 0)
+    stock.save!
+  end
+
+  def create_purchase_order!(provider)
     purchase_order = PurchaseOrder.new
-    purchase_order.purchase_date = Time.parse(date)
+    purchase_order.purchase_date = params[:product][:purchase_date]
     purchase_order.product_attributes = @product.attributes
-    purchase_order.provider_name = @product.provider.name
-    purchase_order.amount = product_params[:amount]
+    purchase_order.provider_name = provider.name
+    purchase_order.amount = params[:product][:amount]
     purchase_order.save!
   end
 
-
-  # Mover a un servicio
-
-  def joined_products(products)
-    result = []
-
-    products.each do |p|
-      similar = similar_product(p, result)
-
-      if similar
-        similar.amount = similar.amount + p.amount # Modifico el que ya agregue a la lista resultante
-        similar.sale_price = [p.sale_price, similar.sale_price].max
-        similar.cash_price = [p.cash_price, similar.cash_price].max
-      else
-        result.push(p)
-      end
-    end
-
-    result
+  def updated_stock
+    stock = Stock.find_by(product_id: @product.id, provider_id: params[:provider][:id])
+    stock.amount += params[:product][:amount]
+    stock.save!
+    create_purchase_order!(stock.provider)
   end
-
-  def similar_product(product, products)
-    products.find { |p| similar_attributes(p, product) }
-  end
-
-  def similar_attributes(product1, product2)
-    product1.brand.to_s     == product2.brand.to_s   &&
-      product1.article.to_s == product2.article.to_s &&
-      product1.size.to_s    == product2.size.to_s    &&
-      product1.color.to_s   == product2.color.to_s
-  end
-
-  # fin servicio
 
 end

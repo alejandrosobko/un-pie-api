@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20170316033234) do
+ActiveRecord::Schema.define(version: 20170413180124) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -45,21 +45,16 @@ ActiveRecord::Schema.define(version: 20170316033234) do
     t.float    "purchase_price", default: 0.0,   null: false
     t.float    "sale_price",     default: 0.0,   null: false
     t.float    "cash_price",     default: 0.0,   null: false
-    t.integer  "size"
-    t.integer  "amount",         default: 0,     null: false
+    t.string   "size"
     t.boolean  "own",            default: false
-    t.integer  "provider_id"
     t.datetime "created_at",                     null: false
     t.datetime "updated_at",                     null: false
-    t.index ["provider_id"], name: "index_products_on_provider_id", using: :btree
   end
 
   create_table "providers", force: :cascade do |t|
     t.string   "name"
-    t.integer  "products_id"
-    t.datetime "created_at",  null: false
-    t.datetime "updated_at",  null: false
-    t.index ["products_id"], name: "index_providers_on_products_id", using: :btree
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
   end
 
   create_table "purchase_orders", force: :cascade do |t|
@@ -72,12 +67,14 @@ ActiveRecord::Schema.define(version: 20170316033234) do
   end
 
   create_table "sales", force: :cascade do |t|
-    t.datetime "sale_date",  null: false
-    t.float    "sale_price", null: false
+    t.datetime "sale_date",   null: false
+    t.float    "sale_price",  null: false
     t.integer  "product_id"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
+    t.integer  "provider_id"
+    t.datetime "created_at",  null: false
+    t.datetime "updated_at",  null: false
     t.index ["product_id"], name: "index_sales_on_product_id", using: :btree
+    t.index ["provider_id"], name: "index_sales_on_provider_id", using: :btree
   end
 
   create_table "services", force: :cascade do |t|
@@ -86,6 +83,16 @@ ActiveRecord::Schema.define(version: 20170316033234) do
     t.datetime "payment_date",               null: false
     t.datetime "created_at",                 null: false
     t.datetime "updated_at",                 null: false
+  end
+
+  create_table "stocks", force: :cascade do |t|
+    t.integer  "amount",      default: 0, null: false
+    t.integer  "product_id"
+    t.integer  "provider_id"
+    t.datetime "created_at",              null: false
+    t.datetime "updated_at",              null: false
+    t.index ["product_id"], name: "index_stocks_on_product_id", using: :btree
+    t.index ["provider_id"], name: "index_stocks_on_provider_id", using: :btree
   end
 
   create_table "users", force: :cascade do |t|
