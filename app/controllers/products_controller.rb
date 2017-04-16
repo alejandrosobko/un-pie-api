@@ -110,7 +110,7 @@ class ProductsController < ApplicationController
 
   def updated_stock
     stock = Stock.find_by(product_id: @product.id, provider_id: params[:provider][:id])
-    stock.amount = params[:product][:amount]
+    stock.amount += params[:product][:amount]
     stock.save!
     create_purchase_order!(stock.provider)
   end
