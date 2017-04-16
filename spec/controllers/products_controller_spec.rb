@@ -141,12 +141,12 @@ RSpec.describe ProductsController, type: :controller do
 
       expect(PurchaseOrder.all.size).to eq 1
 
-      put :add_to_stock, params: {id: json['id'], product: {amount: 3}, provider: {id: Provider.first.id}}
+      post :add_to_stock, params: {id: json['id'], product: {amount: 10}, provider: {id: Provider.first.id}}
       json = JSON.parse(response.body)['product']
 
-      expect(json['amount']).to eq 6
+      expect(json['amount']).to eq 10
       expect(PurchaseOrder.all.size).to eq 2
-      expect(PurchaseOrder.last.amount).to eq 3
+      expect(PurchaseOrder.last.amount).to eq 10
     end
   end
 

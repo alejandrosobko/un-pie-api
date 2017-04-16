@@ -14,7 +14,7 @@ class ProductsController < ApplicationController
     render json: @product
   end
 
-  # PATCH/PUT /products/1
+  # POST /products/1
   def update
     if @product.update(product_params) # && updated_purchase_order && updated_stock
       render json: @product
@@ -39,9 +39,9 @@ class ProductsController < ApplicationController
     end
   end
 
-  # PUT /products/add_to_stock
+  # POST /products/add_to_stock
   def add_to_stock
-    if updated_stock
+    if updated_stock && @product.update_attribute(:own, true)
       render json: @product
     else
       render json: @product.errors, status: :unprocessable_entity
@@ -110,7 +110,7 @@ class ProductsController < ApplicationController
 
   def updated_stock
     stock = Stock.find_by(product_id: @product.id, provider_id: params[:provider][:id])
-    stock.amount += params[:product][:amount]
+    stock.amount = params[:product][:amount]
     stock.save!
     create_purchase_order!(stock.provider)
   end
