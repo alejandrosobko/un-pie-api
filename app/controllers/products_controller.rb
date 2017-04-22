@@ -67,6 +67,10 @@ class ProductsController < ApplicationController
   def parse_default_params
     return unless params[:product]
 
+    params[:product][:brand] = params[:product][:brand].capitalize if params[:product][:brand]
+    params[:product][:article] = params[:product][:article].upcase if params[:product][:article]
+    params[:product][:size] = params[:product][:size].capitalize if params[:product][:size]
+    params[:product][:color] = params[:product][:color].capitalize if params[:product][:color]
     params[:product][:purchase_price] ||= 0.0
     params[:product][:sale_price] ||= 0.0
     params[:product][:cash_price] ||= 0.0
@@ -86,7 +90,7 @@ class ProductsController < ApplicationController
     raise "provider can't be blank" unless params[:product][:provider]
 
     exists_provider? ||
-      Provider.find_or_initialize_by(name: params[:product][:provider][:name])
+      Provider.find_or_initialize_by(name: params[:product][:provider][:name].to_s.capitalize)
   end
 
   def exists_provider?

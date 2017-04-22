@@ -41,7 +41,7 @@ RSpec.describe ProductsController, type: :controller do
 
   describe 'POST create' do
     it 'raise exception' do
-      params = {brand: 'A brand', article: 'OJ1', color: 'Negro'}
+      params = {brand: 'A brand', article: 'Oj1', color: 'Negro'}
       expect{post :create, params: {product: params}}.to raise_error("provider can't be blank")
     end
 
