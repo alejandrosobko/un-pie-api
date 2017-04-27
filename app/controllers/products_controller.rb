@@ -1,11 +1,10 @@
 class ProductsController < ApplicationController
-  before_action :set_product, only: [:update, :destroy]
+  before_action :set_product, only: [:show, :update, :add_to_stock]
   before_action :parse_default_params
 
   # GET /products
   def index
-    @products = joined_products(Product.where(own: true))
-    # @products = Product.where(own: true)
+    @products = Product.where(own: true)
 
     render json: {products: @products}
   end
@@ -26,7 +25,7 @@ class ProductsController < ApplicationController
 
   # POST /products
   def create
-    @product = find_or_initialize_product
+    @product = Product.new(product_params)
     @product.provider = find_or_initialize_provider
 
     if @product.save
@@ -40,7 +39,9 @@ class ProductsController < ApplicationController
 
   # PUT /products/add_to_stock
   def add_to_stock
-    if @product.update(amount: product_params[:amount])
+    amount = @product.amount + params[:product][:amount]
+
+    if @product.update(amount: amount, own: true)
       create_purchase_order!
 
       render json: @product
@@ -57,7 +58,6 @@ class ProductsController < ApplicationController
 
   private
 
-  # Use callbacks to share common setup or constraints between actions.
   def set_product
     @product = Product.find(params[:id])
   end
@@ -69,28 +69,17 @@ class ProductsController < ApplicationController
 
   def parse_default_params
     return unless params[:product]
-    params[:product][:amount]         ||= 0
+
+    params[:product][:brand]   = params[:product][:brand].capitalize if params[:product][:brand]
+    params[:product][:color]   = params[:product][:color].capitalize if params[:product][:color]
+    params[:product][:brand]   = params[:product][:brand].capitalize if params[:product][:brand]
+    params[:product][:article] = params[:product][:article].upcase   if params[:product][:article]
+    params[:product][:amount]  = params[:product][:amount].to_i
     params[:product][:purchase_price] ||= 0.0
     params[:product][:sale_price]     ||= 0.0
     params[:product][:cash_price]     ||= 0.0
     purchase_date = params[:product][:purchase_date] || Time.zone.now.to_s
     params[:product][:purchase_date] = Time.zone.parse(purchase_date)
-  end
-
-  def find_or_initialize_product
-    return unless product_params
-
-    product = Product.find_by(brand: product_params[:brand], article: product_params[:article],
-                              size: product_params[:size], color: product_params[:color])
-
-    if product && product.provider.name == params[:product][:provider][:name]
-      product.purchase_price = product_params[:purchase_price].to_i
-      product.amount += product_params[:amount].to_i
-      product.own = true
-      product
-    else
-      Product.new(product_params)
-    end
   end
 
   def find_or_initialize_provider
@@ -104,42 +93,8 @@ class ProductsController < ApplicationController
     purchase_order.purchase_date = Time.parse(date)
     purchase_order.product_attributes = @product.attributes
     purchase_order.provider_name = @product.provider.name
-    purchase_order.amount = product_params[:amount]
+    purchase_order.amount = params[:product][:amount]
     purchase_order.save!
   end
-
-
-  # Mover a un servicio
-
-  def joined_products(products)
-    result = []
-
-    products.each do |p|
-      similar = similar_product(p, result)
-
-      if similar
-        similar.amount = similar.amount + p.amount # Modifico el que ya agregue a la lista resultante
-        similar.sale_price = [p.sale_price, similar.sale_price].max
-        similar.cash_price = [p.cash_price, similar.cash_price].max
-      else
-        result.push(p)
-      end
-    end
-
-    result
-  end
-
-  def similar_product(product, products)
-    products.find { |p| similar_attributes(p, product) }
-  end
-
-  def similar_attributes(product1, product2)
-    product1.brand.to_s     == product2.brand.to_s   &&
-      product1.article.to_s == product2.article.to_s &&
-      product1.size.to_s    == product2.size.to_s    &&
-      product1.color.to_s   == product2.color.to_s
-  end
-
-  # fin servicio
 
 end

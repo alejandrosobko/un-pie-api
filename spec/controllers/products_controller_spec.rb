@@ -71,37 +71,6 @@ RSpec.describe ProductsController, type: :controller do
       expect(PurchaseOrder.first.product_attributes['brand']).to eq json['brand']
     end
 
-    describe 'existing products' do
-      it 'should increase the amount, and not create other one' do
-        provider = FactoryGirl.create(:provider, name: 'Bla')
-        FactoryGirl.create(:product, brand: 'Brand', article: 'ABC123', size: '40-41', color: 'Black', amount: 3, provider: provider)
-
-        expect(Product.all.size).to eq 1
-
-        params = {brand: 'Brand', article: 'ABC123', size: '40-41', color: 'Black', amount: 3, provider: provider.as_json}
-
-        post :create, params: {product: params}
-        json = JSON.parse(response.body)['product']
-
-        expect(Product.all.size).to eq 1
-        expect(json['amount']).to eq 6
-      end
-
-      it 'update the purchase price' do
-        provider = FactoryGirl.create(:provider, name: 'Bla')
-        FactoryGirl.create(:product, brand: 'Brand', article: 'ABC123', size: '40-41', color: 'Black', purchase_price: 10, provider: provider)
-
-        expect(Product.all.size).to eq 1
-
-        params = {brand: 'Brand', article: 'ABC123', size: '40-41', color: 'Black', amount: 3, purchase_price: 20, provider: provider.as_json}
-
-        post :create, params: {product: params}
-        json = JSON.parse(response.body)['product']
-
-        expect(Product.all.size).to eq 1
-        expect(json['purchase_price']).to eq 20
-      end
-    end
   end
 
   describe 'PUT/PATCH update' do
@@ -138,13 +107,13 @@ RSpec.describe ProductsController, type: :controller do
 
       expect(PurchaseOrder.all.size).to eq 1
 
-      params = {amount: 3}
+      params = {amount: 8}
       put :add_to_stock, params: {id: json['id'], product: params}
       json = JSON.parse(response.body)['product']
 
-      expect(json['amount']).to eq 3
+      expect(json['amount']).to eq 11
       expect(PurchaseOrder.all.size).to eq 2
-      expect(PurchaseOrder.last.amount).to eq 3
+      expect(PurchaseOrder.last.amount).to eq 8
     end
   end
 

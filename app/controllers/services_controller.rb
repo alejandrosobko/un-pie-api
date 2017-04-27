@@ -1,6 +1,6 @@
 class ServicesController < ApplicationController
-  before_filter :set_service, only: [:update]
-  before_filter :parse_date, only: [:create]
+  before_action :set_service, only: [:update]
+  before_action :parse_date, only: [:create]
 
   # GET /services
   def index
