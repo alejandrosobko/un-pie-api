@@ -8,10 +8,8 @@ class CreateProducts < ActiveRecord::Migration[5.0]
       t.float :purchase_price, default: 0.0, null: false
       t.float :sale_price, default: 0.0, null: false
       t.float :cash_price, default: 0.0, null: false
-      t.integer :size
-      t.integer :amount, default: 0, null: false
+      t.string :size
       t.boolean :own, default: false
-      t.belongs_to :provider, index: true
 
       t.timestamps
     end

@@ -12,6 +12,7 @@ RSpec.describe Sale, type: :model do
     it 'create a sale' do
       sale = Sale.new
       sale.product = FactoryGirl.build(:product)
+      sale.provider = FactoryGirl.build(:provider)
       sale.sale_date = DateTime.now.in_time_zone
       sale.sale_price = 120
 

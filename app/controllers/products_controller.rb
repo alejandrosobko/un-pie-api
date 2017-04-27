@@ -6,7 +6,7 @@ class ProductsController < ApplicationController
   def index
     @products = Product.where(own: true)
 
-    render json: {products: @products}
+    render json: @products
   end
 
   # GET /products/1
@@ -14,9 +14,9 @@ class ProductsController < ApplicationController
     render json: @product
   end
 
-  # PATCH/PUT /products/1
+  # POST /products/1
   def update
-    if @product.update(product_params)
+    if @product.update(product_params) # && updated_purchase_order && updated_stock
       render json: @product
     else
       render json: @product.errors, status: :unprocessable_entity
@@ -25,11 +25,13 @@ class ProductsController < ApplicationController
 
   # POST /products
   def create
-    @product = Product.new(product_params)
-    @product.provider = find_or_initialize_provider
+    @product = find_or_initialize_product
+    provider = find_or_initialize_provider
+    @product.providers.push(provider) unless exists_provider?
 
     if @product.save
-      create_purchase_order!
+      create_stock!(provider)
+      create_purchase_order!(provider)
 
       render json: @product, status: :created, location: @product
     else
@@ -37,13 +39,9 @@ class ProductsController < ApplicationController
     end
   end
 
-  # PUT /products/add_to_stock
+  # POST /products/add_to_stock
   def add_to_stock
-    amount = @product.amount + params[:product][:amount]
-
-    if @product.update(amount: amount, own: true)
-      create_purchase_order!
-
+    if updated_stock && @product.update_attribute(:own, true)
       render json: @product
     else
       render json: @product.errors, status: :unprocessable_entity
@@ -63,38 +61,61 @@ class ProductsController < ApplicationController
   end
 
   def product_params
-    params.require(:product).permit(:brand, :article, :color, :description, :purchase_price, :sale_price, :cash_price,
-                                    :size, :amount, :own)
+    params.require(:product).permit(:brand, :article, :color, :description, :purchase_price, :sale_price, :cash_price, :size, :own)
   end
 
   def parse_default_params
     return unless params[:product]
 
-    params[:product][:brand]   = params[:product][:brand].capitalize if params[:product][:brand]
-    params[:product][:color]   = params[:product][:color].capitalize if params[:product][:color]
-    params[:product][:brand]   = params[:product][:brand].capitalize if params[:product][:brand]
-    params[:product][:article] = params[:product][:article].upcase   if params[:product][:article]
-    params[:product][:amount]  = params[:product][:amount].to_i
+    params[:product][:brand] = params[:product][:brand].capitalize if params[:product][:brand]
+    params[:product][:article] = params[:product][:article].upcase if params[:product][:article]
+    params[:product][:size] = params[:product][:size].capitalize if params[:product][:size]
+    params[:product][:color] = params[:product][:color].capitalize if params[:product][:color]
     params[:product][:purchase_price] ||= 0.0
-    params[:product][:sale_price]     ||= 0.0
-    params[:product][:cash_price]     ||= 0.0
+    params[:product][:sale_price] ||= 0.0
+    params[:product][:cash_price] ||= 0.0
+    params[:product][:amount] = params[:product][:amount].to_i
     purchase_date = params[:product][:purchase_date] || Time.zone.now.to_s
     params[:product][:purchase_date] = Time.zone.parse(purchase_date)
   end
 
-  def find_or_initialize_provider
-    return unless params[:product][:provider]
-    Provider.find_or_initialize_by(name: params[:product][:provider][:name])
+  def find_or_initialize_product
+    product = Product.find_or_initialize_by(brand: product_params[:brand], article: product_params[:article],
+                                            size: product_params[:size], color: product_params[:color])
+    product.assign_attributes(product_params)
+    product
   end
 
-  def create_purchase_order!
-    date = params[:product].fetch(:purchase_date, Time.zone.now).to_s
+  def find_or_initialize_provider
+    raise "provider can't be blank" unless params[:product][:provider]
+
+    Provider.find_or_initialize_by(name: params[:product][:provider][:name].to_s.capitalize)
+  end
+
+  def exists_provider?
+    @product.providers.find { |prov| prov.name == params[:product][:provider][:name] }
+  end
+
+  def create_stock!(provider)
+    stock = Stock.find_or_initialize_by(product_id: @product.id, provider_id: provider.id)
+    stock.amount += params[:product].fetch(:amount, 0)
+    stock.save!
+  end
+
+  def create_purchase_order!(provider)
     purchase_order = PurchaseOrder.new
-    purchase_order.purchase_date = Time.parse(date)
+    purchase_order.purchase_date = params[:product][:purchase_date]
     purchase_order.product_attributes = @product.attributes
-    purchase_order.provider_name = @product.provider.name
+    purchase_order.provider_name = provider.name
     purchase_order.amount = params[:product][:amount]
     purchase_order.save!
+  end
+
+  def updated_stock
+    stock = Stock.find_by(product_id: @product.id, provider_id: params[:provider][:id])
+    stock.amount += params[:product][:amount]
+    stock.save!
+    create_purchase_order!(stock.provider)
   end
 
 end

@@ -10,27 +10,18 @@ RSpec.describe Product, type: :model do
     end
 
     it 'should can save a product with brand and provider' do
-      product = Product.new({brand: 'Some brand'})
-      product.provider = build(:provider)
+      product = Product.new(brand: 'Some brand')
+      product.providers = [build(:provider)]
 
       expect(product.save).to eq true
     end
 
-    it 'should initialize with amount = 0 and prices = 0.0' do
-      product = Product.create!({brand: 'A brand', provider: build(:provider)})
+    it 'should initialize with prices = 0.0' do
+      product = Product.create!({brand: 'A brand', providers: [build(:provider)]})
 
-      expect(product.amount).to eq 0
       expect(product.purchase_price).to eq 0.0
       expect(product.sale_price).to eq 0.0
       expect(product.cash_price).to eq 0.0
-    end
-
-    it 'should save one product with 3 of amount' do
-      product = FactoryGirl.build(:product)
-      product.amount = 3
-
-      expect(product.save).to eq true
-      expect(Product.find(product.id).amount).to eq 3
     end
 
     it 'returns false when ask for own' do
