@@ -21,7 +21,7 @@ RSpec.describe Product, type: :model do
 
       expect(product.amount).to eq 0
       expect(product.purchase_price).to eq 0.0
-      expect(product.sale_price).to eq 0.0
+      expect(product.credit_card_price).to eq 0.0
       expect(product.cash_price).to eq 0.0
     end
 
