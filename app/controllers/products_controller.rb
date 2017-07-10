@@ -51,7 +51,11 @@ class ProductsController < ApplicationController
   end
 
   def logs
-    logs = Product.all.map(&:audits).flatten
+    if (params[:from] || params[:to]).present?
+      logs = find_logs_by_date
+    else
+      logs = Product.all.map(&:audits).flatten
+    end
 
     render json: {logs: logs}
   end
@@ -95,6 +99,13 @@ class ProductsController < ApplicationController
     purchase_order.provider_name = @product.provider.name
     purchase_order.amount = params[:product][:amount]
     purchase_order.save!
+  end
+
+  def find_logs_by_date
+    from = Time.zone.parse(params[:from])
+    to = Time.zone.parse(params[:to])
+
+    Product.where('created_at >= ? AND updated_at <= ?', from, to).map(&:audits).flatten
   end
 
 end
