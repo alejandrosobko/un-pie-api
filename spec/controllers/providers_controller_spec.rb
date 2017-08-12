@@ -41,4 +41,19 @@ RSpec.describe ProvidersController, type: :controller do
     end
   end
 
+  describe 'POST remove_product' do
+    it 'removes one product without destroy it' do
+      product = FactoryGirl.create(:product)
+      provider = product.provider
+
+      expect(provider.products.size).to eq 1
+
+      post :remove_product, params: {id: provider.id, product_id: product.id}
+
+      expect(response.status).to eq 200
+      expect(provider.products.size).to eq 0
+      expect(product).to_not be_nil
+    end
+  end
+
 end

@@ -1,5 +1,5 @@
 class ProvidersController < ApplicationController
-  before_action :set_provider, only: [:show, :update]
+  before_action :set_provider, only: [:show, :update, :remove_product]
 
   # GET /providers
   def index
@@ -26,6 +26,17 @@ class ProvidersController < ApplicationController
     logs = Provider.all.map(&:audits).flatten
 
     render json: {logs: logs}
+  end
+
+  # POST /providers/1/remove_product
+  def remove_product
+    @provider.products = @provider.products.reject { |p| p.id == params[:product_id].to_i}
+
+    if @provider.save
+      render json: @provider
+    else
+      render json: @provider.errors, status: :unprocessable_entity
+    end
   end
 
   private

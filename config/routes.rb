@@ -8,6 +8,7 @@ Rails.application.routes.draw do
 
   resources :providers, only: [:index, :update] do
     get :logs, on: :collection
+    post :remove_product, on: :member
   end
 
   resources :services, only: [:index, :update, :create, :destroy] do
