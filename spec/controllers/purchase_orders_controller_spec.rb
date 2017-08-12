@@ -17,7 +17,7 @@ RSpec.describe PurchaseOrdersController, type: :controller do
     end
 
     it 'returns a list with one purchase order' do
-      FactoryGirl.create(:purchase_order)
+      FactoryGirl.create(:purchase_order, {product: build(:product)})
       get :index
       json = JSON.parse(response.body)['purchase_orders']
 

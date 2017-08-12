@@ -68,7 +68,7 @@ RSpec.describe ProductsController, type: :controller do
       json = JSON.parse(response.body)['product']
 
       expect(PurchaseOrder.all.size).to eq 1
-      expect(PurchaseOrder.first.product_attributes['brand']).to eq json['brand']
+      expect(PurchaseOrder.first.product.brand).to eq json['brand']
     end
 
   end

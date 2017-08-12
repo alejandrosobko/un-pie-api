@@ -95,7 +95,7 @@ class ProductsController < ApplicationController
     date = params[:product].fetch(:purchase_date, Time.zone.now).to_s
     purchase_order = PurchaseOrder.new
     purchase_order.purchase_date = Time.parse(date)
-    purchase_order.product_attributes = @product.attributes
+    purchase_order.product = @product
     purchase_order.provider_name = @product.provider.name
     purchase_order.amount = params[:product][:amount]
     purchase_order.save!

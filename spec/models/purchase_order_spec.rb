@@ -3,13 +3,13 @@ require 'rails_helper'
 RSpec.describe PurchaseOrder, type: :model do
 
   describe 'new purchase order' do
-    it 'save a new purchase order' do
-      purchase_order = FactoryGirl.build(:purchase_order)
+    it 'save a new complete purchase order' do
+      purchase_order = FactoryGirl.build(:purchase_order, {product: FactoryGirl.build(:product)})
 
       expect(purchase_order.save).to eq true
     end
 
-    it 'does not save without product attributes' do
+    it 'does not save without product' do
       purchase_order = PurchaseOrder.new
       purchase_order.purchase_date = Time.zone.now
 
@@ -18,16 +18,16 @@ RSpec.describe PurchaseOrder, type: :model do
 
     it 'does not save without purchase date' do
       purchase_order = PurchaseOrder.new
-      purchase_order.product_attributes = FactoryGirl.attributes_for(:product)
+      purchase_order.product = FactoryGirl.build(:product)
 
       expect(purchase_order.save).to eq false
     end
 
     it 'creates two equals purchase orders' do
-      product_attributes = FactoryGirl.attributes_for(:product)
+      product = FactoryGirl.build(:product)
       time = Time.zone.now
-      PurchaseOrder.create!(product_attributes: product_attributes, purchase_date: time, provider_name: 'Ale')
-      PurchaseOrder.create!(product_attributes: product_attributes, purchase_date: time, provider_name: 'Ale')
+      PurchaseOrder.create!(product: product, purchase_date: time, provider_name: 'Ale')
+      PurchaseOrder.create!(product: product, purchase_date: time, provider_name: 'Ale')
 
       expect(PurchaseOrder.all.size).to eq 2
     end
@@ -35,7 +35,7 @@ RSpec.describe PurchaseOrder, type: :model do
 
   describe 'audited' do
     it 'update' do
-      purchase_order = FactoryGirl.create(:purchase_order)
+      purchase_order = FactoryGirl.create(:purchase_order, {product: FactoryGirl.build(:product)})
 
       expect(purchase_order.audits.size).to eq 1
       expect(purchase_order.audits.first.action).to eq 'create'
@@ -49,7 +49,7 @@ RSpec.describe PurchaseOrder, type: :model do
     end
 
     it 'destroy' do
-      purchase_order = FactoryGirl.create(:purchase_order)
+      purchase_order = FactoryGirl.create(:purchase_order, {product: FactoryGirl.build(:product)})
 
       expect(purchase_order.audits.size).to eq 1
       expect(purchase_order.audits.first.action).to eq 'create'
