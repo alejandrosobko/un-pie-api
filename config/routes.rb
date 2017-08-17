@@ -15,7 +15,7 @@ Rails.application.routes.draw do
     get :logs, on: :collection
   end
 
-  resources :purchase_orders, only: [:index, :show] do
+  resources :purchase_orders, only: [:index, :show, :destroy] do
     get :logs, on: :collection
   end
 
