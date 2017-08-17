@@ -4,7 +4,7 @@ RSpec.describe PurchaseOrder, type: :model do
 
   describe 'new purchase order' do
     it 'save a new complete purchase order' do
-      purchase_order = FactoryGirl.build(:purchase_order, {product: FactoryGirl.build(:product)})
+      purchase_order = build(:purchase_order, {product: build(:product)})
 
       expect(purchase_order.save).to eq true
     end
@@ -18,13 +18,13 @@ RSpec.describe PurchaseOrder, type: :model do
 
     it 'does not save without purchase date' do
       purchase_order = PurchaseOrder.new
-      purchase_order.product = FactoryGirl.build(:product)
+      purchase_order.product = build(:product)
 
       expect(purchase_order.save).to eq false
     end
 
     it 'creates two equals purchase orders' do
-      product = FactoryGirl.build(:product)
+      product = build(:product)
       time = Time.zone.now
       PurchaseOrder.create!(product: product, purchase_date: time, provider_name: 'Ale')
       PurchaseOrder.create!(product: product, purchase_date: time, provider_name: 'Ale')
@@ -35,7 +35,7 @@ RSpec.describe PurchaseOrder, type: :model do
 
   describe 'audited' do
     it 'update' do
-      purchase_order = FactoryGirl.create(:purchase_order, {product: FactoryGirl.build(:product)})
+      purchase_order = create(:purchase_order, {product: build(:product)})
 
       expect(purchase_order.audits.size).to eq 1
       expect(purchase_order.audits.first.action).to eq 'create'
@@ -49,7 +49,7 @@ RSpec.describe PurchaseOrder, type: :model do
     end
 
     it 'destroy' do
-      purchase_order = FactoryGirl.create(:purchase_order, {product: FactoryGirl.build(:product)})
+      purchase_order = create(:purchase_order, {product: build(:product)})
 
       expect(purchase_order.audits.size).to eq 1
       expect(purchase_order.audits.first.action).to eq 'create'

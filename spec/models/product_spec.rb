@@ -26,7 +26,7 @@ RSpec.describe Product, type: :model do
     end
 
     it 'should save one product with 3 of amount' do
-      product = FactoryGirl.build(:product)
+      product = build(:product)
       product.amount = 3
 
       expect(product.save).to eq true
@@ -34,7 +34,7 @@ RSpec.describe Product, type: :model do
     end
 
     it 'returns false when ask for own' do
-      product = FactoryGirl.create(:product)
+      product = create(:product)
 
       expect(product.own).to eq false
     end
@@ -48,7 +48,7 @@ RSpec.describe Product, type: :model do
 
   describe 'audited' do
     it 'update' do
-      product = FactoryGirl.create(:product)
+      product = create(:product)
 
       expect(product.audits.size).to eq 1
       expect(product.audits.first.action).to eq 'create'
@@ -62,7 +62,7 @@ RSpec.describe Product, type: :model do
     end
 
     it 'destroy' do
-      product = FactoryGirl.create(:product)
+      product = create(:product)
 
       expect(product.audits.size).to eq 1
       expect(product.audits.first.action).to eq 'create'

@@ -28,7 +28,7 @@ RSpec.describe Provider, type: :model do
 
   describe 'audited' do
     it 'update' do
-      provider = FactoryGirl.create(:provider)
+      provider = create(:provider)
 
       expect(provider.audits.size).to eq 1
       expect(provider.audits.first.action).to eq 'create'
@@ -42,7 +42,7 @@ RSpec.describe Provider, type: :model do
     end
 
     it 'destroy' do
-      provider = FactoryGirl.create(:provider)
+      provider = create(:provider)
 
       expect(provider.audits.size).to eq 1
       expect(provider.audits.first.action).to eq 'create'

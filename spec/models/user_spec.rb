@@ -58,7 +58,7 @@ RSpec.describe User, type: :model do
 
   describe 'audited' do
     it 'update' do
-      user = FactoryGirl.create(:user)
+      user = create(:user)
 
       expect(user.audits.size).to eq 1
       expect(user.audits.first.action).to eq 'create'
@@ -72,7 +72,7 @@ RSpec.describe User, type: :model do
     end
 
     it 'destroy' do
-      user = FactoryGirl.create(:user)
+      user = create(:user)
 
       expect(user.audits.size).to eq 1
       expect(user.audits.first.action).to eq 'create'

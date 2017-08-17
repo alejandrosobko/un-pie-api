@@ -5,7 +5,7 @@ RSpec.describe ProductsController, type: :controller do
   before(:each) do
     Time.zone = 'Buenos Aires'
 
-    token = Knock::AuthToken.new(payload: {sub: FactoryGirl.create(:user).id}).token
+    token = Knock::AuthToken.new(payload: {sub: create(:user).id}).token
     @request.headers['Authorization'] = "Bearer #{token}"
   end
 
@@ -19,7 +19,7 @@ RSpec.describe ProductsController, type: :controller do
     end
 
     it 'returns a list without own products' do
-      FactoryGirl.create(:product)
+      create(:product)
       get :index
       json = JSON.parse(response.body)['products']
 
@@ -28,7 +28,7 @@ RSpec.describe ProductsController, type: :controller do
     end
 
     it 'returns a list with one own products' do
-      FactoryGirl.create(:product, own: true)
+      create(:product, own: true)
 
       get :index
       json = JSON.parse(response.body)['products']
@@ -50,7 +50,7 @@ RSpec.describe ProductsController, type: :controller do
     end
 
     it 'creates one product' do
-      provider = FactoryGirl.create(:provider, name: 'Super calzado')
+      provider = create(:provider, name: 'Super calzado')
       purchase_order = {purchase_date: '2017-01-01'}
       params = {brand: 'A brand', article: 'OJ1', color: 'Negro', provider: provider.as_json, purchase_order: purchase_order}
       post :create, params: {product: params}
@@ -61,7 +61,7 @@ RSpec.describe ProductsController, type: :controller do
     end
 
     it 'creates a purchase order' do
-      provider = FactoryGirl.create(:provider, name: 'Super calzado')
+      provider = create(:provider, name: 'Super calzado')
       purchase_order = {purchase_date: '2017-01-01'}
       params = {brand: 'A brand', article: 'OJ1', color: 'Negro', provider: provider.as_json, purchase_order: purchase_order}
       post :create, params: {product: params}
@@ -75,7 +75,7 @@ RSpec.describe ProductsController, type: :controller do
 
   describe 'PUT/PATCH update' do
     it 'update product' do
-      product = FactoryGirl.create(:product)
+      product = create(:product)
       expect(Product.find(product.id).color).to be_nil
 
       params = {color: 'Black'}
@@ -87,7 +87,7 @@ RSpec.describe ProductsController, type: :controller do
     end
 
     it 'update amount' do
-      product = FactoryGirl.create(:product)
+      product = create(:product)
       params = {amount: 3}
       put :update, params: {id: product.id, product: params}
       json = JSON.parse(response.body)['product']
@@ -99,7 +99,7 @@ RSpec.describe ProductsController, type: :controller do
 
   describe 'add to stock' do
     it 'increase stock and creates a new purchase order' do
-      provider = FactoryGirl.create(:provider, name: 'Bla')
+      provider = create(:provider, name: 'Bla')
       params = {brand: 'Brand', article: 'ABC123', size: '40-41', color: 'Black', amount: 3, purchase_price: 20, provider: provider.as_json}
 
       post :create, params: {product: params}

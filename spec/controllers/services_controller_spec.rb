@@ -3,7 +3,7 @@ require 'rails_helper'
 RSpec.describe ServicesController, type: :controller do
 
   before(:each) do
-    token = Knock::AuthToken.new(payload: {sub: FactoryGirl.create(:user).id}).token
+    token = Knock::AuthToken.new(payload: {sub: create(:user).id}).token
     @request.headers['Authorization'] = "Bearer #{token}"
   end
 
@@ -17,7 +17,7 @@ RSpec.describe ServicesController, type: :controller do
     end
 
     it 'returns a list with one service' do
-      FactoryGirl.create(:service)
+      create(:service)
       get :index
       json = JSON.parse(response.body)['services']
 

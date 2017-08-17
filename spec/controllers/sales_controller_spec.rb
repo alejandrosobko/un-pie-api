@@ -3,7 +3,7 @@ require 'rails_helper'
 RSpec.describe SalesController, type: :controller do
 
   before(:each) do
-    token = Knock::AuthToken.new(payload: {sub: FactoryGirl.create(:user).id}).token
+    token = Knock::AuthToken.new(payload: {sub: create(:user).id}).token
     @request.headers['Authorization'] = "Bearer #{token}"
   end
 
@@ -17,7 +17,7 @@ RSpec.describe SalesController, type: :controller do
     end
 
     it 'returns a list with one sale' do
-      FactoryGirl.create(:complete_sale)
+      create(:complete_sale)
       get :index
       json = JSON.parse(response.body)['sales']
 
@@ -28,8 +28,8 @@ RSpec.describe SalesController, type: :controller do
 
   describe 'POST index' do
     it 'creates a sale' do
-      product = FactoryGirl.create(:product)
-      product = FactoryGirl.attributes_for(:product, {id: product.id})
+      product = create(:product)
+      product = attributes_for(:product, {id: product.id})
 
       params = {sale: {sale_price: 120, sale_date: '20/01/2016', product: product}}
       post :create, params: params
@@ -41,8 +41,8 @@ RSpec.describe SalesController, type: :controller do
     end
 
     it 'reduces the amount of the product sold' do
-      product = FactoryGirl.create(:product, amount: 3)
-      product = FactoryGirl.attributes_for(:product, {id: product.id})
+      product = create(:product, amount: 3)
+      product = attributes_for(:product, {id: product.id})
 
       params = {sale: {sale_price: 120, sale_date: '20/01/2016', product: product}}
       post :create, params: params

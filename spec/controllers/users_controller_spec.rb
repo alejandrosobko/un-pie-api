@@ -4,7 +4,7 @@ include BCrypt
 RSpec.describe UsersController, type: :controller do
 
   before(:each) do
-    token = Knock::AuthToken.new(payload: {sub: FactoryGirl.create(:user).id}).token
+    token = Knock::AuthToken.new(payload: {sub: create(:user).id}).token
     @request.headers['Authorization'] = "Bearer #{token}"
   end
 

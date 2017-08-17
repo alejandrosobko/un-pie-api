@@ -3,7 +3,7 @@ require 'rails_helper'
 RSpec.describe ProvidersController, type: :controller do
 
   before(:each) do
-    token = Knock::AuthToken.new(payload: {sub: FactoryGirl.create(:user).id}).token
+    token = Knock::AuthToken.new(payload: {sub: create(:user).id}).token
     @request.headers['Authorization'] = "Bearer #{token}"
   end
 
@@ -17,7 +17,7 @@ RSpec.describe ProvidersController, type: :controller do
     end
 
     it 'returns a list with one provider' do
-      FactoryGirl.create(:provider)
+      create(:provider)
       get :index
       json = JSON.parse(response.body)['providers']
 
@@ -28,7 +28,7 @@ RSpec.describe ProvidersController, type: :controller do
 
   describe 'PUT/PATCH update' do
     it 'update the provider name' do
-      provider = FactoryGirl.create(:provider)
+      provider = create(:provider)
 
       expect(Provider.all.size).to eq 1
 
@@ -43,7 +43,7 @@ RSpec.describe ProvidersController, type: :controller do
 
   describe 'POST remove_product' do
     it 'removes one product without destroy it' do
-      product = FactoryGirl.create(:product)
+      product = create(:product)
       provider = product.provider
 
       expect(provider.products.size).to eq 1

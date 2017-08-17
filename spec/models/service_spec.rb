@@ -21,7 +21,7 @@ RSpec.describe Service, type: :model do
 
   describe 'audited' do
     it 'update' do
-      service = FactoryGirl.create(:service)
+      service = create(:service)
 
       expect(service.audits.size).to eq 1
       expect(service.audits.first.action).to eq 'create'
@@ -35,7 +35,7 @@ RSpec.describe Service, type: :model do
     end
 
     it 'destroy' do
-      service = FactoryGirl.create(:service)
+      service = create(:service)
 
       expect(service.audits.size).to eq 1
       expect(service.audits.first.action).to eq 'create'
